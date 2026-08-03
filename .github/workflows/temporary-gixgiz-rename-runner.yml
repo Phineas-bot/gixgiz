@@ -1,0 +1,134 @@
+name: Temporary GixGiz rename runner
+
+on:
+  pull_request_target:
+    types: [synchronize, reopened, ready_for_review]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  rename:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'agent/rename-gixgiz-mit' &&
+      github.event.pull_request.user.login == 'Phineas-bot'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact rename branch
+        uses: actions/checkout@v4
+        with:
+          repository: Phineas-bot/jimoto-ai
+          ref: agent/rename-gixgiz-mit
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Rename product, normalize filenames and add MIT licence
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          branch_helper = Path('.github/workflows/temporary-rename-gixgiz.yml')
+          allowed_suffixes = {'.md', '.yml', '.yaml', '.toml', '.txt', '.json'}
+          allowed_names = {'.gitignore', '.editorconfig', '.gitattributes'}
+          replacements = [
+              ('JIMOTOAI', 'GIXGIZ'),
+              ('JimotoAI', 'GixGiz'),
+              ('jimoto-ai', 'gixgiz'),
+              ('jimotai', 'gixgiz'),
+              ('jimoto-', 'gixgiz-'),
+              ('jimoto_', 'gixgiz_'),
+              ('jimoto', 'gixgiz'),
+          ]
+
+          paths = sorted(
+              [p for p in root.rglob('*') if '.git' not in p.parts],
+              key=lambda p: len(p.parts),
+              reverse=True,
+          )
+          for path in paths:
+              clean_name = path.name.replace('\u200b', '')
+              if clean_name != path.name:
+                  target = path.with_name(clean_name)
+                  if target.exists():
+                      raise RuntimeError(f'Cannot normalize {path}: target {target} exists')
+                  path.rename(target)
+
+          for path in root.rglob('*'):
+              if not path.is_file() or '.git' in path.parts or path == branch_helper:
+                  continue
+              if path.name not in allowed_names and path.suffix.lower() not in allowed_suffixes:
+                  continue
+              try:
+                  original = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              updated = original
+              for old, new in replacements:
+                  updated = updated.replace(old, new)
+              if path.name == 'README.md':
+                  updated = re.sub(
+                      r'## Licence\n\n.*?(?=\n## |\Z)',
+                      '## Licence\n\nGixGiz is licensed under the [MIT License](./LICENSE).',
+                      updated,
+                      flags=re.S,
+                  )
+              if updated != original:
+                  path.write_text(updated, encoding='utf-8', newline='\n')
+
+          Path('LICENSE').write_text('''MIT License
+
+Copyright (c) 2026 NGNINDEM PHINÉES
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+''', encoding='utf-8', newline='\n')
+
+          if branch_helper.exists():
+              branch_helper.unlink()
+
+      - name: Verify repository identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -RIn --exclude-dir=.git -E 'JimotoAI|JIMOTOAI|jimotai|jimoto-ai|jimoto-core|jimoto-contracts' .; then
+            echo 'Old product identifiers remain.' >&2
+            exit 1
+          fi
+          python - <<'PY'
+          from pathlib import Path
+          bad = [str(p) for p in Path('.').rglob('*') if '\u200b' in str(p)]
+          if bad:
+              raise SystemExit('Zero-width characters remain: ' + ', '.join(bad))
+          PY
+          test -f LICENSE
+          grep -q '^MIT License$' LICENSE
+          git diff --check
+
+      - name: Commit and push rename
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore: rename product to GixGiz and add MIT license'
+          git push origin HEAD:agent/rename-gixgiz-mit
