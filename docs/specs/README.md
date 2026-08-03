@@ -2,17 +2,17 @@
 
 This directory contains the authoritative product and engineering specifications for GixGiz.
 
-## Planned documents
+## Documents
 
-1. `01-product-vision` — product purpose, users, principles and complete platform direction.
-2. `02-architecture` — layers, trust boundaries, process topology and major contracts.
-3. `03-module-specifications` — module responsibilities, interfaces, states and acceptance expectations.
-4. `04-ui-ux-specification` — user flows, status language, accessibility and recovery behavior.
-5. `05-development-roadmap` — staged implementation and release gates.
-6. `06-ai-coding-playbook` — coding-agent workflow, testing, review and evidence standards.
-7. `07-v0.1-foundation-specification` — the currently active Windows-first release scope.
+1. [`01-product-vision`](./01-product-vision.md) — product purpose, users, principles and complete platform direction.
+2. [`02-architecture`](./02-architecture.md) — layers, trust boundaries, process topology and major contracts.
+3. [`03-module-specifications`](./03-module-specifications.md) — module responsibilities, interfaces, states and acceptance expectations.
+4. [`04-ui-ux-specification`](./04-ui-ux-specification.md) — user flows, status language, accessibility and recovery behavior.
+5. [`05-development-roadmap`](./05-development-roadmap.md) — staged implementation and release gates.
+6. [`06-ai-coding-playbook`](./06-ai-coding-playbook.md) — coding-agent workflow, testing, review and evidence standards.
+7. [`07-v0.1-foundation-specification`](./07-v0.1-foundation-specification.md) — the currently active Windows-first release scope.
 
-The existing source documents should be added here using stable filenames. Markdown versions are preferred for repository navigation and future maintenance; original DOCX files may also be retained where useful.
+The specifications use stable Markdown filenames for repository navigation and maintenance.
 
 ## Authority
 

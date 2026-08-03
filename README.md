@@ -1,8 +1,8 @@
 # GixGiz
 
-GixGiz is a desktop app that make local AI simple. It auto-detects your PC hardware, installs the right runtime, downloads the best AI models, and gives you a GUI to use them. No technical setup needed.
+GixGiz is a desktop app that makes local AI simple. It auto-detects your PC hardware, installs the right runtime, downloads the best AI models, and gives you a GUI to use them. No technical setup is required for end users.
 
-## One click local setup, No CLI needed.
+## One-click local setup, no CLI needed
 
 ## Current target
 
@@ -50,17 +50,53 @@ Directories are added when real implementation work requires them; the project d
 
 ## Development approach
 
-GixGiz is developed as a local-first modular monolith using vertical slices. The planned implementation order is:
+GixGiz is developed as a local-first modular monolith using vertical slices. The logical v0.1 task sequence is:
 
-1. Repository and build foundation.
-2. Flutter–Rust typed health handshake.
-3. Hardware scanning and `MachineProfile`.
-4. Deterministic capability recommendation.
-5. Ollama lifecycle management.
-6. Resumable model acquisition and verification.
-7. Streaming local chat and persistence.
+| Task | Capability |
+|---:|---|
+| 01 | [Establish repository and build architecture](./docs/tasks/0001-establish-repository-and-build-architecture.md) |
+| 02 | [Create the Flutter Windows desktop shell](./docs/tasks/0002-create-flutter-windows-desktop-shell.md) |
+| 03 | [Create the Rust workspace and platform core](./docs/tasks/0003-create-rust-workspace-and-platform-core.md) |
+| 04 | [Establish typed Flutter–Rust communication](./docs/tasks/0004-establish-typed-flutter-rust-communication.md) |
+| 05 | [Add the SQLite persistence foundation](./docs/tasks/0005-add-sqlite-persistence-foundation.md) |
+| 06 | [Add the Windows CI pipeline](./docs/tasks/0006-add-windows-ci-pipeline.md) |
+| 07 | [Implement the hardware-scan vertical slice](./docs/tasks/0007-implement-hardware-scan-vertical-slice.md) |
+| 08 | [Implement the capability recommendation engine](./docs/tasks/0008-implement-capability-recommendation-engine.md) |
+| 09 | [Implement the Ollama runtime adapter](./docs/tasks/0009-implement-ollama-runtime-adapter.md) |
+| 10 | [Implement the model installation workflow](./docs/tasks/0010-implement-model-installation-workflow.md) |
+| 11 | [Implement local streaming chat](./docs/tasks/0011-implement-local-streaming-chat.md) |
 
 All contributors and coding agents must read [`AGENTS.md`](./AGENTS.md) before changing the repository.
+
+## Development prerequisites
+
+The supported implementation environment is Windows 11 x64. Development requires:
+
+- Git.
+- Flutter stable with Windows desktop support enabled.
+- Visual Studio 2022 or Visual Studio Build Tools with the **Desktop development with C++** workload and a Windows SDK.
+- Rustup with the stable Rust MSVC toolchain.
+
+Task 02 will pin the concrete Flutter version when it creates the desktop application. Task 03 will add `rust-toolchain.toml` and pin the Rust baseline when it creates the Cargo workspace. Until those manifests exist, do not infer or document versions that the repository cannot enforce.
+
+## Initial development workflow
+
+Clone the repository and inspect the focused task before making changes:
+
+```powershell
+git clone https://github.com/Phineas-bot/gixgiz.git
+Set-Location gixgiz
+git status --short
+```
+
+Task 01 intentionally contains no Flutter or Rust workspace, so it has no root build command yet. For the current documentation foundation, run:
+
+```powershell
+git diff --check
+git -c core.quotepath=false ls-files | Where-Object { $_.Contains([char]0x200B) }
+```
+
+The second command must produce no output. Also verify the Markdown navigation links manually. Each later task specification defines its exact targeted commands; once a repository task runner is introduced, its documented commands become the validation source of truth.
 
 ## Technology direction
 
@@ -71,7 +107,7 @@ All contributors and coding agents must read [`AGENTS.md`](./AGENTS.md) before c
 - **Initial platform:** Windows 11 x64
 - **Automation:** GitHub Actions
 
-These choices remain subject to accepted Architecture Decision Records before implementation is locked.
+These choices are governed by the accepted foundation Architecture Decision Records.
 
 ## Contributing
 
