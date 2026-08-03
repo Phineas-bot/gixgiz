@@ -134,3 +134,5 @@ SOFTWARE.
           fi
           git commit -m 'chore: rename product to GixGiz and add MIT license'
           git push origin HEAD:agent/rename-gixgiz-mit
+
+# Synchronization trigger for the temporary main-branch runner.
