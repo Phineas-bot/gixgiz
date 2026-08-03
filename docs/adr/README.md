@@ -4,12 +4,12 @@ Architecture Decision Records (ADRs) preserve the context and consequences of im
 
 ## Naming
 
-Use sequential names:
+Use sequential, descriptive names:
 
 ```text
-0001-use-a-local-first-modular-monolith.md
-0002-select-flutter-for-the-desktop-shell.md
-0003-select-rust-for-the-platform-core.md
+0001-modular-monolith-and-process-topology.md
+0002-windows-flutter-rust-baseline.md
+0003-flutter-rust-local-transport.md
 ```
 
 ## Required structure
@@ -31,18 +31,32 @@ Use sequential names:
 
 ## Security and privacy impact
 
+## Implementation constraints
+
 ## Follow-up work
 ```
 
-## Initial ADR backlog
+## Accepted foundation decisions
 
-- Local-first modular monolith rather than microservices.
-- Flutter for the desktop experience.
-- Rust for the platform core.
-- Flutter–Rust communication mechanism.
-- SQLite local persistence and migration policy.
-- Windows-first support strategy.
-- Runtime adapter boundary and initial Ollama provider.
-- Installer privilege and rollback strategy.
+These ADRs govern Tasks 02–05 and must be read before changing the desktop shell, Rust core, local boundary, persistence or Windows identity.
 
-Create an ADR before implementing a decision that is difficult to reverse, cross-cutting, security-sensitive, externally visible, or likely to be questioned later.
+| ADR | Decision | Primary task impact |
+|---|---|---|
+| [0001](./0001-modular-monolith-and-process-topology.md) | Modular monolith with Flutter desktop and supervised Rust core sidecar | Tasks 02–05 |
+| [0002](./0002-windows-flutter-rust-baseline.md) | Windows 11 x64, Flutter stable desktop and stable Rust core baseline | Tasks 02–03 |
+| [0003](./0003-flutter-rust-local-transport.md) | Authenticated loopback typed API with version handshake and streaming | Task 04 |
+| [0004](./0004-sqlite-persistence-and-migrations.md) | Core-owned SQLite with transactional migrations and recovery | Task 05 |
+| [0005](./0005-windows-application-identity-and-packaging-direction.md) | Stable GixGiz Windows identity, per-user installation and packaging direction | Tasks 02–05 |
+
+## Deferred ADR backlog
+
+The following decisions remain intentionally deferred until their implementation stage:
+
+- Runtime abstraction and initial Ollama provider.
+- Privileged installer-helper, elevation and rollback strategy.
+- Final Windows installer format and automatic update mechanism.
+- Public local gateway and external-client registration.
+- Tool runtime and sandbox architecture.
+- AI Pack format, signing and isolation.
+
+Create or update an ADR before implementing a decision that is difficult to reverse, cross-cutting, security-sensitive, externally visible or likely to be questioned later. A later ADR may supersede an accepted decision, but implementation must not silently diverge from it.
