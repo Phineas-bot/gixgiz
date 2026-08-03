@@ -1,6 +1,9 @@
 name: One-time GixGiz rename
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - agent/rename-gixgiz-mit
@@ -13,28 +16,22 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out branch
+      - name: Check out rename branch
         uses: actions/checkout@v4
         with:
+          ref: agent/rename-gixgiz-mit
           fetch-depth: 0
 
       - name: Rename product and normalize files
         shell: python
         run: |
           from pathlib import Path
-          import os
           import re
 
           root = Path('.')
           workflow = Path('.github/workflows/temporary-rename-gixgiz.yml')
-
-          allowed_suffixes = {
-              '.md', '.yml', '.yaml', '.toml', '.txt', '.json', '.gitignore'
-          }
-          allowed_names = {
-              '.gitignore', '.editorconfig', '.gitattributes'
-          }
-
+          allowed_suffixes = {'.md', '.yml', '.yaml', '.toml', '.txt', '.json'}
+          allowed_names = {'.gitignore', '.editorconfig', '.gitattributes'}
           replacements = [
               ('JIMOTOAI', 'GIXGIZ'),
               ('JimotoAI', 'GixGiz'),
@@ -45,9 +42,8 @@ jobs:
               ('jimoto', 'gixgiz'),
           ]
 
-          # Normalize invisible zero-width characters in tracked paths.
           paths = sorted(
-              [p for p in root.rglob('*') if p != Path('.git') and '.git' not in p.parts],
+              [p for p in root.rglob('*') if '.git' not in p.parts],
               key=lambda p: len(p.parts),
               reverse=True,
           )
@@ -59,7 +55,6 @@ jobs:
                       raise RuntimeError(f'Cannot normalize {path}: target {target} exists')
                   path.rename(target)
 
-          # Replace product and internal identifiers in repository text files.
           for path in root.rglob('*'):
               if not path.is_file() or '.git' in path.parts or path == workflow:
                   continue
@@ -82,7 +77,7 @@ jobs:
               if updated != original:
                   path.write_text(updated, encoding='utf-8', newline='\n')
 
-          license_text = '''MIT License
+          Path('LICENSE').write_text('''MIT License
 
 Copyright (c) 2026 NGNINDEM PHINÉES
 
@@ -103,10 +98,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
-          Path('LICENSE').write_text(license_text, encoding='utf-8', newline='\n')
+''', encoding='utf-8', newline='\n')
 
-          # The helper workflow must not remain in the final branch diff.
           if workflow.exists():
               workflow.unlink()
 
@@ -114,7 +107,7 @@ SOFTWARE.
         shell: bash
         run: |
           set -euo pipefail
-          if grep -RIn --exclude-dir=.git --exclude='temporary-rename-gixgiz.yml' -E 'JimotoAI|JIMOTOAI|jimotai|jimoto-ai|jimoto-core|jimoto-contracts' .; then
+          if grep -RIn --exclude-dir=.git -E 'JimotoAI|JIMOTOAI|jimotai|jimoto-ai|jimoto-core|jimoto-contracts' .; then
             echo 'Old product identifiers remain in repository files.' >&2
             exit 1
           fi
