@@ -2,13 +2,13 @@
 title: 1. Purpose, Operating Model and Non-Negotiables
 ---
 
-*How to develop JimotoAI reliably with Codex and other frontier coding agents*
+*How to develop GixGiz reliably with Codex and other frontier coding agents*
 
 **Document 6 of 6 \| AI Coding Playbook \| Page 1 of 15**
 
 ## Operating model
 
-AI coding agents act as implementers, reviewers and investigators; the human remains product owner and architecture authority. JimotoAI is developed through small verified tasks, not one instruction to "build the platform." Every task begins from written scope and ends with evidence.
+AI coding agents act as implementers, reviewers and investigators; the human remains product owner and architecture authority. GixGiz is developed through small verified tasks, not one instruction to "build the platform." Every task begins from written scope and ends with evidence.
 
 ## Non-negotiables
 
@@ -44,7 +44,7 @@ AI coding agents act as implementers, reviewers and investigators; the human rem
 
 **Document 6 of 6 \| AI Coding Playbook \| Page 2 of 15**
 
-jimotai/\
+gixgiz/\
 apps/desktop/\
 crates/core/ hardware/ capability/ gateway/ tools/ \...\
 packages/first-party/\
@@ -603,5 +603,5 @@ Add a regression test, make the minimal fix, and avoid unrelated\
 refactors. Run \[COMMANDS\]. Report root cause, changed behaviour and\
 remaining environment-specific uncertainty.
 
-| **Final principle:** JimotoAI should be built at AI speed with software-engineering control: specifications define intent, tests define evidence, and human review defines acceptance. |
+| **Final principle:** GixGiz should be built at AI speed with software-engineering control: specifications define intent, tests define evidence, and human review defines acceptance. |
 |----|

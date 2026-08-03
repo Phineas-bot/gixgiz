@@ -1,6 +1,6 @@
-# JimotoAI Specifications
+# GixGiz Specifications
 
-This directory contains the authoritative product and engineering specifications for JimotoAI.
+This directory contains the authoritative product and engineering specifications for GixGiz.
 
 ## Planned documents
 

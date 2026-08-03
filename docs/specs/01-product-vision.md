@@ -1,5 +1,5 @@
 ---
-title: JimotoAI Product Vision
+title: GixGiz Product Vision
 ---
 
 *The local-first AI operating platform for accessible, private and actionable personal AI*
@@ -8,16 +8,16 @@ title: JimotoAI Product Vision
 
 # 1. Vision and problem {#vision-and-problem}
 
-JimotoAI makes powerful artificial intelligence usable on ordinary personal computers without requiring users to understand runtimes, model formats, quantization, GPU configuration, command-line installation, context windows or agent frameworks. It converts a fragmented technical ecosystem into one coherent desktop experience: the user installs JimotoAI, the platform studies the machine, recommends a suitable configuration, prepares the local AI environment and exposes useful capabilities through a graphical interface and integrations with existing software.
+GixGiz makes powerful artificial intelligence usable on ordinary personal computers without requiring users to understand runtimes, model formats, quantization, GPU configuration, command-line installation, context windows or agent frameworks. It converts a fragmented technical ecosystem into one coherent desktop experience: the user installs GixGiz, the platform studies the machine, recommends a suitable configuration, prepares the local AI environment and exposes useful capabilities through a graphical interface and integrations with existing software.
 
 The central problem is not the absence of open models. It is the operational burden surrounding them. Current tools usually solve one layer---model execution, model discovery, chat, coding or workflow automation---while users must still assemble and maintain the complete system. Non-technical users are excluded, and technical users repeatedly solve the same compatibility, installation, resource and integration problems.
 
-| **Product promise:** Tell JimotoAI what you want to accomplish; it decides how to prepare and operate the local AI environment while keeping you informed and in control. |
+| **Product promise:** Tell GixGiz what you want to accomplish; it decides how to prepare and operate the local AI environment while keeping you informed and in control. |
 |----|
 
 # 2. Product identity {#product-identity}
 
-JimotoAI is not primarily a chatbot, an Ollama interface or a model downloader. It is a local-first AI operating layer positioned between user-facing applications and AI infrastructure. It manages hardware understanding, runtimes, models, packages, permissions, tools, workflows and integrations. Chat, PDF analysis, coding and research are applications built on the platform rather than definitions of the platform itself.
+GixGiz is not primarily a chatbot, an Ollama interface or a model downloader. It is a local-first AI operating layer positioned between user-facing applications and AI infrastructure. It manages hardware understanding, runtimes, models, packages, permissions, tools, workflows and integrations. Chat, PDF analysis, coding and research are applications built on the platform rather than definitions of the platform itself.
 
 | **Principle** | **Meaning** |
 |----|----|
@@ -41,11 +41,11 @@ JimotoAI is not primarily a chatbot, an Ollama interface or a model downloader. 
 
 Product Scope and Long-Term Direction
 
-**JimotoAI Product Vision \| Page 2**
+**GixGiz Product Vision \| Page 2**
 
 # 4. Full-platform capabilities {#full-platform-capabilities}
 
-| **Capability domain** | **JimotoAI responsibility** |
+| **Capability domain** | **GixGiz responsibility** |
 |----|----|
 | Machine intelligence | Detect CPU, GPU, VRAM, RAM, storage, drivers, acceleration support, power state and realistic workload limits. |
 | Environment orchestration | Install, detect, update, start, stop and health-check supported runtimes through adapters. |
@@ -59,7 +59,7 @@ Product Scope and Long-Term Direction
 
 # 5. Differentiation {#differentiation}
 
-JimotoAI combines ideas that currently exist in separate products: the convenience of a desktop model manager, the dependency resolution of a package manager, the hardware awareness of a systems utility, the integration surface of a local API, and the controlled action loop of an AI coding agent. Its defensible value is the orchestration layer and the quality of the complete experience---not merely embedding an existing runtime.
+GixGiz combines ideas that currently exist in separate products: the convenience of a desktop model manager, the dependency resolution of a package manager, the hardware awareness of a systems utility, the integration surface of a local API, and the controlled action loop of an AI coding agent. Its defensible value is the orchestration layer and the quality of the complete experience---not merely embedding an existing runtime.
 
 # 6. Success definition {#success-definition}
 
@@ -67,7 +67,7 @@ JimotoAI combines ideas that currently exist in separate products: the convenien
 
 - The platform selects configurations conservatively, reports uncertainty and never promises performance it has not measured or inferred responsibly.
 
-- External applications such as VS Code can use JimotoAI without knowing which underlying runtime or model is active.
+- External applications such as VS Code can use GixGiz without knowing which underlying runtime or model is active.
 
 - Agentic actions remain understandable, reversible where possible, permission-scoped and interruptible.
 
@@ -75,5 +75,5 @@ JimotoAI combines ideas that currently exist in separate products: the convenien
 
 - The project can grow from a consumer desktop application into a trusted local AI ecosystem while preserving a stable core contract.
 
-| **North-star statement:** JimotoAI is the trusted local layer that turns a compatible computer into a manageable, extensible and action-capable personal AI environment. |
+| **North-star statement:** GixGiz is the trusted local layer that turns a compatible computer into a manageable, extensible and action-capable personal AI environment. |
 |----|

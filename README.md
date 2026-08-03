@@ -1,10 +1,10 @@
-# JimotoAI
+# GixGiz
 
-JimotoAI is a local-first AI operating platform that simplifies the installation, configuration, management, and use of local AI environments.
+GixGiz is a local-first AI operating platform that simplifies the installation, configuration, management, and use of local AI environments.
 
 ## Current target
 
-JimotoAI v0.1 is a Windows-first foundation release that will:
+GixGiz v0.1 is a Windows-first foundation release that will:
 
 1. Detect the user's hardware and relevant prerequisites.
 2. Generate an explainable capability report.
@@ -22,7 +22,7 @@ Architecture and repository-foundation phase.
 ## Repository map
 
 ```text
-jimoto-ai/
+gixgiz/
 ├── apps/                  # User-facing applications; Flutter desktop first
 ├── crates/                # Rust platform core and service modules
 ├── docs/
@@ -48,7 +48,7 @@ Directories are added when real implementation work requires them; the project d
 
 ## Development approach
 
-JimotoAI is developed as a local-first modular monolith using vertical slices. The planned implementation order is:
+GixGiz is developed as a local-first modular monolith using vertical slices. The planned implementation order is:
 
 1. Repository and build foundation.
 2. Flutter–Rust typed health handshake.

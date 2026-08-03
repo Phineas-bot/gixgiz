@@ -31,7 +31,7 @@ secrets/
 **/build/
 **/.dart_tool/
 
-# Local JimotoAI state
+# Local GixGiz state
 *.db
 *.db-shm
 *.db-wal

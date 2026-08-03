@@ -266,7 +266,7 @@ retry_policy, rollback_plan, logs, approval_requests }
 
 ## Purpose
 
-Coordinates scarce CPU, GPU, VRAM, RAM, disk bandwidth and model slots so multiple JimotoAI clients remain stable and responsive.
+Coordinates scarce CPU, GPU, VRAM, RAM, disk bandwidth and model slots so multiple GixGiz clients remain stable and responsive.
 
 ## Scheduling inputs
 
@@ -318,7 +318,7 @@ Leases are revoked only through cooperative cancellation unless the provider cra
 
 - Apply usage budgets, cancellation, concurrency and audit policies.
 
-- Offer Jimoto-native, OpenAI-compatible and MCP-related interfaces.
+- Offer GixGiz-native, OpenAI-compatible and MCP-related interfaces.
 
 ## Core API
 
@@ -336,7 +336,7 @@ POST /jobs/{id}/cancel
 | Origin control | Do not allow arbitrary web pages to call privileged local APIs. |
 | Attachment scope | Resolve file handles through approved access grants. |
 | Output limits | Bound stream size and retain cancellation control. |
-| Compatibility API | Expose only safe subset unless client has enhanced Jimoto scopes. |
+| Compatibility API | Expose only safe subset unless client has enhanced GixGiz scopes. |
 
 ## Acceptance criteria
 
@@ -488,11 +488,11 @@ export(Result, Format, Destination)
 | **Integration** | **Capabilities** |
 |----|----|
 | VS Code | Chat, inline edits, code actions, repository context, agent tasks and diff review. |
-| JetBrains | Equivalent IDE bridge through Jimoto API. |
+| JetBrains | Equivalent IDE bridge through GixGiz API. |
 | CLI | Manage runtimes/models/packs and launch scripted agent sessions. |
 | Office/document apps | Selected text, document context and generated outputs through add-ins. |
 | Browser extension later | Send selected page content under explicit permission. |
-| MCP | Consume approved tools and expose Jimoto capabilities to compatible clients. |
+| MCP | Consume approved tools and expose GixGiz capabilities to compatible clients. |
 
 ## Developer SDK
 
@@ -508,11 +508,11 @@ export(Result, Format, Destination)
 
 ## VS Code flow
 
-Extension gathers approved editor context → Jimoto Gateway\
+Extension gathers approved editor context → GixGiz Gateway\
 → Developer Pack workflow → local model/tool runtime\
 → streamed explanation/edit proposal → VS Code diff UI
 
-The extension never calls Ollama directly. Switching runtimes or models occurs behind JimotoAI and does not require changing the IDE integration.
+The extension never calls Ollama directly. Switching runtimes or models occurs behind GixGiz and does not require changing the IDE integration.
 
 15\. Enterprise, Cloud/Hybrid and Cross-Cutting Services
 

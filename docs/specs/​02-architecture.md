@@ -8,15 +8,15 @@ title: 1. Architecture Purpose and System Context
 
 ## Scope
 
-This architecture describes the entire JimotoAI platform: desktop experience, local platform core, runtimes and models, secure agent tools, AI packs, third-party integrations, SDK, enterprise management and future cloud/hybrid execution. The initial implementation can be smaller, but its contracts should not block the full design.
+This architecture describes the entire GixGiz platform: desktop experience, local platform core, runtimes and models, secure agent tools, AI packs, third-party integrations, SDK, enterprise management and future cloud/hybrid execution. The initial implementation can be smaller, but its contracts should not block the full design.
 
 ## Architectural style
 
-JimotoAI is a modular desktop platform built as a local-first modular monolith. Core capabilities are separated by strict interfaces and internal events, yet initially ship as a coordinated installation rather than independently deployed microservices. This reduces operational complexity while preserving replaceable modules.
+GixGiz is a modular desktop platform built as a local-first modular monolith. Core capabilities are separated by strict interfaces and internal events, yet initially ship as a coordinated installation rather than independently deployed microservices. This reduces operational complexity while preserving replaceable modules.
 
 ## System boundary
 
-JimotoAI owns orchestration and policy. It does not train foundation models and does not replace operating systems, IDEs or office suites. It installs or integrates with inference engines, manages models, exposes local APIs, brokers system tools, and embeds capabilities into existing user workflows.
+GixGiz owns orchestration and policy. It does not train foundation models and does not replace operating systems, IDEs or office suites. It installs or integrates with inference engines, manages models, exposes local APIs, brokers system tools, and embeds capabilities into existing user workflows.
 
 ## Primary actors
 
@@ -32,7 +32,7 @@ JimotoAI owns orchestration and policy. It does not train foundation models and 
 User / External Client\
 │\
 ▼\
-JimotoAI Desktop + Local Gateway\
+GixGiz Desktop + Local Gateway\
 │\
 ├── Platform Core\
 ├── Policy & Tool Runtime\
@@ -90,7 +90,7 @@ The desktop shell provides onboarding, dashboards, model and runtime management,
 
 - Desktop shell process: presentation, accessibility, local navigation and minimal transient state.
 
-- Jimoto core service: long-running orchestration, APIs, persistent state, policy and runtime supervision.
+- GixGiz core service: long-running orchestration, APIs, persistent state, policy and runtime supervision.
 
 - Provider processes: runtime servers, model workers and optional isolated tool workers.
 
@@ -137,11 +137,11 @@ Recommendation data should be updateable independently from the desktop binary a
 | **Component** | **Responsibility** |
 |----|----|
 | Runtime Manager | Detect, install, update, configure, start, stop, supervise and uninstall runtime instances. |
-| Runtime Adapter | Translate JimotoAI contracts into provider-specific APIs, CLI operations and status semantics. |
+| Runtime Adapter | Translate GixGiz contracts into provider-specific APIs, CLI operations and status semantics. |
 | Runtime Abstraction | Stable capability-oriented interfaces consumed by the gateway, packs and model manager. |
 | Provider capability descriptor | Declares chat, embeddings, vision, tool calling, model pull, cancellation and metrics support. |
 
-Application → Jimoto Runtime API → Adapter Registry\
+Application → GixGiz Runtime API → Adapter Registry\
 ├─ OllamaAdapter\
 ├─ LlamaCppAdapter\
 ├─ LMStudioAdapter\
@@ -157,7 +157,7 @@ Application → Jimoto Runtime API → Adapter Registry\
 
 - Operations: resource metrics, logs, active requests and capability negotiation.
 
-- Security: bind only to approved local interfaces by default and authenticate external clients through JimotoAI.
+- Security: bind only to approved local interfaces by default and authenticate external clients through GixGiz.
 
 Not all runtimes implement every operation. The adapter reports unsupported capabilities explicitly. The planner selects a provider only when the requested capability set is satisfiable, avoiding fake universal interfaces.
 
@@ -167,7 +167,7 @@ Not all runtimes implement every operation. The adapter reports unsupported capa
 
 ## Model catalogue and identity
 
-JimotoAI maintains a normalized catalogue independent of runtime naming. A model record contains family, task specialties, licence, formats, parameter class, quantization, context, architecture, checksums, source, safety notes, compatibility rules and estimated resource profiles. Runtime-specific identifiers map to a canonical model identity.
+GixGiz maintains a normalized catalogue independent of runtime naming. A model record contains family, task specialties, licence, formats, parameter class, quantization, context, architecture, checksums, source, safety notes, compatibility rules and estimated resource profiles. Runtime-specific identifiers map to a canonical model identity.
 
 ## Storage architecture
 
@@ -214,9 +214,9 @@ Client request\
 
 | **Surface** | **Purpose** |
 |----|----|
-| Jimoto native API | Full features: sessions, packs, tools, permissions, workflows and diagnostics. |
+| GixGiz native API | Full features: sessions, packs, tools, permissions, workflows and diagnostics. |
 | OpenAI-compatible API | Compatibility for existing local clients using chat, embeddings and model listing. |
-| MCP server/client bridge | Expose approved Jimoto tools and consume external MCP tools under policy. |
+| MCP server/client bridge | Expose approved GixGiz tools and consume external MCP tools under policy. |
 | CLI | Scriptable management and agent interaction for technical users and automation. |
 | Extension transport | Authenticated WebSocket/HTTP or native messaging for VS Code and other desktop apps. |
 
@@ -230,7 +230,7 @@ Context assembly is separated from inference. It collects conversation state, se
 
 ## Tool-based system access
 
-Models never receive direct operating-system authority. They emit structured tool requests. JimotoAI validates the schema, resolves permissions, evaluates risk, requests confirmation when necessary, executes through a controlled implementation and returns bounded results to the model.
+Models never receive direct operating-system authority. They emit structured tool requests. GixGiz validates the schema, resolves permissions, evaluates risk, requests confirmation when necessary, executes through a controlled implementation and returns bounded results to the model.
 
 | **Tool family** | **Examples** | **Default posture** |
 |----|----|----|
@@ -328,7 +328,7 @@ The primary boundaries are: user versus model output, trusted platform core vers
 
 ## Safe change model
 
-For file and code modifications, JimotoAI should stage changes, present summaries or diffs, support selective approval, and retain recovery snapshots where feasible. Terminal commands are parsed and policy-checked, but structured tools are preferred for routine file and Git operations because they are safer and cross-platform.
+For file and code modifications, GixGiz should stage changes, present summaries or diffs, support selective approval, and retain recovery snapshots where feasible. Terminal commands are parsed and policy-checked, but structured tools are preferred for routine file and Git operations because they are safer and cross-platform.
 
 12\. Extension SDK, Integrations and Marketplace
 
@@ -341,7 +341,7 @@ For file and code modifications, JimotoAI should stage changes, present summarie
 | Runtime adapter | Adds a new local or future cloud inference provider. |
 | Tool provider | Adds a structured capability such as CAD, database, email or device control. |
 | AI Pack | Adds end-user workflows, UI and domain behaviour. |
-| Client integration | Connects an IDE, office suite, browser or CLI to the Jimoto gateway. |
+| Client integration | Connects an IDE, office suite, browser or CLI to the GixGiz gateway. |
 | Model catalogue provider | Publishes verified metadata and compatibility profiles. |
 | Policy pack | Defines organization restrictions, approval rules and approved components. |
 
@@ -451,5 +451,5 @@ Task Request → Execution Planner\
 
 - Provider-specific retention and privacy terms displayed during connection and policy setup.
 
-| **Architectural endpoint:** JimotoAI becomes a provider-neutral execution platform while remaining local-first by default. |
+| **Architectural endpoint:** GixGiz becomes a provider-neutral execution platform while remaining local-first by default. |
 |----|

@@ -8,7 +8,7 @@ title: 1. Experience Principles and Information Architecture
 
 ## Experience objective
 
-JimotoAI must make a technically complex platform feel calm, trustworthy and task-oriented. Beginners should be able to act without understanding infrastructure, while experts can inspect and control every important decision. The interface uses progressive disclosure rather than separate products for novice and advanced users.
+GixGiz must make a technically complex platform feel calm, trustworthy and task-oriented. Beginners should be able to act without understanding infrastructure, while experts can inspect and control every important decision. The interface uses progressive disclosure rather than separate products for novice and advanced users.
 
 ## Design principles
 
@@ -70,7 +70,7 @@ Beginner mode uses outcome language and recommended settings. Advanced mode adds
 
 ## Existing installation path
 
-When a runtime or model already exists, JimotoAI offers "Use existing," "Manage through JimotoAI," or "Keep external." It explains what management implies and avoids duplicate installation by default.
+When a runtime or model already exists, GixGiz offers "Use existing," "Manage through GixGiz," or "Keep external." It explains what management implies and avoids duplicate installation by default.
 
 | **Critical UX rule:** Never display terminal commands as the normal path. Diagnostics may reveal them in Advanced mode, but users act through validated controls. |
 |----|
@@ -130,7 +130,7 @@ Agent tasks use a three-pane or staged experience: goal and conversation; curren
 
 ## Coding integration
 
-VS Code displays JimotoAI chat, code actions and agent status inside the editor. Edits appear as standard diffs; terminal commands show command, working directory and output. The user can accept selected files, revert the Jimoto change set and open the same run in the desktop Activity screen.
+VS Code displays GixGiz chat, code actions and agent status inside the editor. Edits appear as standard diffs; terminal commands show command, working directory and output. The user can accept selected files, revert the GixGiz change set and open the same run in the desktop Activity screen.
 
 ## Automation plan preview
 

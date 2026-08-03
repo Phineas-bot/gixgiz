@@ -1,24 +1,24 @@
-# AGENTS.md — JimotoAI Repository Instructions
+# AGENTS.md — GixGiz Repository Instructions
 
 > **Applies to:** the entire repository unless a deeper `AGENTS.md` adds stricter, directory-specific rules.  
-> **Audience:** Codex and other coding agents working on JimotoAI.  
+> **Audience:** Codex and other coding agents working on GixGiz.
 > **Status:** root engineering policy.  
-> **Primary release:** JimotoAI v0.1, Windows-first and local-first.
+> **Primary release:** GixGiz v0.1, Windows-first and local-first.
 
 ---
 
 ## 1. Mission
 
-JimotoAI is a **local-first AI operating platform** that turns a compatible personal computer into a manageable, private, extensible, and action-capable AI environment.
+GixGiz is a **local-first AI operating platform** that turns a compatible personal computer into a manageable, private, extensible, and action-capable AI environment.
 
-JimotoAI is **not** merely:
+GixGiz is **not** merely:
 
 - a chatbot;
 - an Ollama frontend;
 - a model downloader;
 - a replacement for the operating system, IDE, or office suite.
 
-JimotoAI owns **orchestration and policy**. It detects hardware, recommends conservative configurations, manages runtimes and models, exposes stable local APIs, and eventually brokers secure tools, workflows, AI Packs, external integrations, enterprise policy, and optional cloud/hybrid execution.
+GixGiz owns **orchestration and policy**. It detects hardware, recommends conservative configurations, manages runtimes and models, exposes stable local APIs, and eventually brokers secure tools, workflows, AI Packs, external integrations, enterprise policy, and optional cloud/hybrid execution.
 
 ### Product principles
 
@@ -51,7 +51,7 @@ Never silently resolve a material conflict between a task, specification, ADR, t
 
 | Document | Authority |
 |---|---|
-| Product Vision | Why JimotoAI exists and the complete product direction |
+| Product Vision | Why GixGiz exists and the complete product direction |
 | v0.1 Initial/MVP Specification | Current release scope and acceptance criteria |
 | Architecture | System boundaries, layers, dependency direction, and major contracts |
 | Module Specifications | Module ownership, interfaces, states, and acceptance expectations |
@@ -67,11 +67,11 @@ Repository documents are authoritative over remembered chat discussions.
 
 ---
 
-## 3. Current Release: JimotoAI v0.1
+## 3. Current Release: GixGiz v0.1
 
 The immediate product goal is:
 
-> A supported non-technical Windows user can install JimotoAI and receive a verified streamed response from a local model in one guided GUI flow, without a terminal or manual runtime configuration.
+> A supported non-technical Windows user can install GixGiz and receive a verified streamed response from a local model in one guided GUI flow, without a terminal or manual runtime configuration.
 
 ### Included in v0.1
 
@@ -113,7 +113,7 @@ Deferred capabilities may influence interfaces, but they must not add speculativ
 
 ## 4. Architectural Model
 
-JimotoAI begins as a **local-first modular monolith**, not a microservice system.
+GixGiz begins as a **local-first modular monolith**, not a microservice system.
 
 ```text
 Experience
@@ -151,7 +151,7 @@ Dependencies point downward. Lower layers must not import UI concerns.
 ### Core separation
 
 - **Runtime Manager:** detects, installs, configures, starts, stops, supervises, updates, and removes runtime instances.
-- **Runtime Adapter:** translates JimotoAI operations into provider-specific APIs/commands and maps provider errors.
+- **Runtime Adapter:** translates GixGiz operations into provider-specific APIs/commands and maps provider errors.
 - **Runtime Abstraction:** stable capability-oriented contracts consumed by the rest of the platform.
 - **Capability Engine:** converts evidence and catalogue metadata into deterministic, explainable plans.
 - **Workflow Coordinator:** persists and coordinates setup stages, approvals, retries, cancellation, and recovery.
@@ -164,12 +164,12 @@ Dependencies point downward. Lower layers must not import UI concerns.
 Use the actual repository as the source of truth. The intended structure is:
 
 ```text
-jimotai/
+gixgiz/
 ├── apps/
 │   └── desktop/                  # Flutter Windows desktop shell
 ├── crates/
-│   ├── jimoto-core/              # Composition root and shared application services
-│   ├── jimoto-contracts/         # Versioned cross-boundary schemas/domain contracts
+│   ├── gixgiz-core/              # Composition root and shared application services
+│   ├── gixgiz-contracts/         # Versioned cross-boundary schemas/domain contracts
 │   ├── hardware-scanner/         # Platform-neutral scan orchestration
 │   ├── hardware-windows/         # Windows-specific hardware providers
 │   ├── capability-engine/        # Deterministic assessment and planning
@@ -829,7 +829,7 @@ Keep nested instructions close to the code they govern and avoid duplicating thi
 
 ## 25. Final Engineering Principle
 
-Build JimotoAI at AI speed with software-engineering control:
+Build GixGiz at AI speed with software-engineering control:
 
 > Specifications define intent.  
 > Interfaces preserve architecture.  

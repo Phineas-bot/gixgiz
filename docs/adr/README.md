@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-Architecture Decision Records (ADRs) preserve the context and consequences of important JimotoAI engineering decisions.
+Architecture Decision Records (ADRs) preserve the context and consequences of important GixGiz engineering decisions.
 
 ## Naming
 
