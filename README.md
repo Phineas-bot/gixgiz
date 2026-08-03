@@ -1,6 +1,8 @@
 # GixGiz
 
-GixGiz is a local-first AI operating platform that simplifies the installation, configuration, management, and use of local AI environments.
+GixGiz is a desktop app that make local AI simple. It auto-detects your PC hardware, installs the right runtime, downloads the best AI models, and gives you a GUI to use them. No technical setup needed.
+
+## One click local setup, No CLI needed.
 
 ## Current target
 
