@@ -77,4 +77,4 @@ The repository is in its foundation stage. Work should be linked to a focused is
 
 ## Licence
 
-A project licence has not yet been selected. Until one is added, no licence is granted for reuse, redistribution, or modification outside GitHub's normal viewing and forking functionality.
+GixGiz is available under the [MIT License](./LICENSE).
