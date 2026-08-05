@@ -19,7 +19,7 @@ The v0.1 success condition is that a supported non-technical Windows user can mo
 
 ## Status
 
-Architecture and repository-foundation phase.
+Flutter Windows desktop-shell foundation. The shell is not connected to the Rust core yet.
 
 ## Repository map
 
@@ -77,7 +77,7 @@ The supported implementation environment is Windows 11 x64. Development requires
 - Visual Studio 2022 or Visual Studio Build Tools with the **Desktop development with C++** workload and a Windows SDK.
 - Rustup with the stable Rust MSVC toolchain.
 
-Task 02 will pin the concrete Flutter version when it creates the desktop application. Task 03 will add `rust-toolchain.toml` and pin the Rust baseline when it creates the Cargo workspace. Until those manifests exist, do not infer or document versions that the repository cannot enforce.
+Task 02 uses Flutter `3.44.8` stable with Dart `3.12.2`; the generated project metadata records framework revision `058e0af2c2b57e369d905a03ac9748b0ebf543c6`. Task 03 will add `rust-toolchain.toml` and pin the Rust baseline when it creates the Cargo workspace.
 
 ## Initial development workflow
 
@@ -97,6 +97,8 @@ git -c core.quotepath=false ls-files | Where-Object { $_.Contains([char]0x200B) 
 ```
 
 The second command must produce no output. Also verify the Markdown navigation links manually. Each later task specification defines its exact targeted commands; once a repository task runner is introduced, its documented commands become the validation source of truth.
+
+For the Task 02 desktop shell, use the exact setup, analysis, test, run, and build commands in [`apps/desktop/README.md`](./apps/desktop/README.md).
 
 ## Technology direction
 
