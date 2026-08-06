@@ -1,0 +1,14 @@
+[package]
+name = "gixgiz-core"
+description = "Platform lifecycle, readiness policy, and operation conventions for GixGiz."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+gixgiz-contracts = { path = "../gixgiz-contracts" }
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true

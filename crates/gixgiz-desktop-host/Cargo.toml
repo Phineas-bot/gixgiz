@@ -1,0 +1,16 @@
+[package]
+name = "gixgiz-desktop-host"
+description = "Composition boundary for the future supervised GixGiz core sidecar."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "gixgiz-core"
+path = "src/main.rs"
+
+[dependencies]
+gixgiz-core = { path = "../gixgiz-core" }
+tracing.workspace = true
