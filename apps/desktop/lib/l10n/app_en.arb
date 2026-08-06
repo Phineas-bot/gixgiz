@@ -1,0 +1,49 @@
+{
+  "@@locale": "en",
+  "appTitle": "GixGiz",
+  "appMarkSemanticLabel": "GixGiz application mark",
+  "foundationNavigationLabel": "Foundation",
+  "aboutNavigationLabel": "About",
+  "foundationTitle": "Foundation",
+  "aboutTitle": "About GixGiz",
+  "loadingTitle": "Checking foundation",
+  "loadingMessage": "GixGiz is checking whether the local core is available.",
+  "readyPlaceholderTitle": "Presentation placeholder",
+  "readyPlaceholderMessage": "A future verified core response can render here. This shell has not verified local AI readiness.",
+  "notConnectedTitle": "Core not connected",
+  "notConnectedMessage": "This foundation build contains the desktop shell only. Local AI setup is not available yet.",
+  "degradedTitle": "Core connection degraded",
+  "degradedMessage": "The desktop received a limited core status. Check again before continuing.",
+  "failedTitle": "Foundation check failed",
+  "failedMessage": "GixGiz could not check the local core. Review diagnostics, then try again.",
+  "cancelledTitle": "Foundation check cancelled",
+  "cancelledMessage": "The check was cancelled. No system changes were made.",
+  "checkAgainAction": "Check again",
+  "diagnosticsLabel": "Diagnostics",
+  "diagnosticCodeLabel": "Diagnostic code: {code}",
+  "@diagnosticCodeLabel": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "foundationStatusSemanticLabel": "Foundation status: {status}. {detail}",
+  "@foundationStatusSemanticLabel": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingProgressSemanticLabel": "Foundation check progress",
+  "inProgressSemanticValue": "In progress",
+  "aboutSummary": "Local-first desktop foundation",
+  "releaseLabel": "Release",
+  "applicationIdLabel": "Application ID",
+  "coreConnectionLabel": "Local core",
+  "coreNotConnectedValue": "Not connected in this build"
+}
