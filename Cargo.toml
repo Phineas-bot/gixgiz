@@ -1,6 +1,8 @@
 [workspace]
 members = [
     "crates/gixgiz-contracts",
+    "crates/gixgiz-core",
+    "crates/gixgiz-desktop-host",
 ]
 resolver = "3"
 
