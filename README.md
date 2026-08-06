@@ -19,7 +19,7 @@ The v0.1 success condition is that a supported non-technical Windows user can mo
 
 ## Status
 
-Flutter Windows desktop-shell foundation. The shell is not connected to the Rust core yet.
+Flutter Windows desktop-shell and Rust platform-core foundations. The shell remains disconnected from the Rust core until Task 04.
 
 ## Repository map
 
@@ -75,9 +75,29 @@ The supported implementation environment is Windows 11 x64. Development requires
 - Git.
 - Flutter stable with Windows desktop support enabled.
 - Visual Studio 2022 or Visual Studio Build Tools with the **Desktop development with C++** workload and a Windows SDK.
-- Rustup with the stable Rust MSVC toolchain.
+- Rustup with the pinned Rust `1.97.1` MSVC toolchain from [`rust-toolchain.toml`](./rust-toolchain.toml).
 
-Task 02 uses Flutter `3.44.8` stable with Dart `3.12.2`; the generated project metadata records framework revision `058e0af2c2b57e369d905a03ac9748b0ebf543c6`. Task 03 will add `rust-toolchain.toml` and pin the Rust baseline when it creates the Cargo workspace.
+Task 02 uses Flutter `3.44.8` stable with Dart `3.12.2`; the generated project metadata records framework revision `058e0af2c2b57e369d905a03ac9748b0ebf543c6`. Cargo automatically selects the repository toolchain, including `rustfmt` and `clippy`, when Rustup is available.
+
+## Rust platform foundation
+
+The root Cargo workspace contains three crates with a strict dependency direction:
+
+```text
+gixgiz-desktop-host -> gixgiz-core -> gixgiz-contracts
+```
+
+- `gixgiz-contracts` owns serializable, provider-neutral identity, readiness, health, error, recovery, and request-correlation contracts.
+- `gixgiz-core` owns platform lifecycle, deterministic readiness policy, safe error mapping, diagnostics initialization, cancellation, and timeout conventions.
+- `gixgiz-desktop-host` builds the future sidecar executable as `gixgiz-core.exe` and currently provides composition only. It has no transport, persistence, provider, or operating-system behavior.
+
+Run the Rust checks from the repository root:
+
+```powershell
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+cargo test --workspace --all-features
+```
 
 ## Initial development workflow
 
@@ -89,14 +109,14 @@ Set-Location gixgiz
 git status --short
 ```
 
-Task 01 intentionally contains no Flutter or Rust workspace, so it has no root build command yet. For the current documentation foundation, run:
+For repository-level hygiene, run:
 
 ```powershell
 git diff --check
 git -c core.quotepath=false ls-files | Where-Object { $_.Contains([char]0x200B) }
 ```
 
-The second command must produce no output. Also verify the Markdown navigation links manually. Each later task specification defines its exact targeted commands; once a repository task runner is introduced, its documented commands become the validation source of truth.
+The second command must produce no output. Also verify the Markdown navigation links manually. Each task specification defines its exact targeted commands; once a repository task runner is introduced, its documented commands become the validation source of truth.
 
 For the Task 02 desktop shell, use the exact setup, analysis, test, run, and build commands in [`apps/desktop/README.md`](./apps/desktop/README.md).
 
