@@ -1,6 +1,6 @@
 [package]
 name = "gixgiz-desktop-host"
-description = "Composition boundary for the future supervised GixGiz core sidecar."
+description = "Authenticated loopback host for the supervised GixGiz core sidecar."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -12,5 +12,16 @@ name = "gixgiz-core"
 path = "src/main.rs"
 
 [dependencies]
+axum.workspace = true
+gixgiz-contracts = { path = "../gixgiz-contracts" }
 gixgiz-core = { path = "../gixgiz-core" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tokio-stream.workspace = true
 tracing.workspace = true
+
+[dev-dependencies]
+http-body-util.workspace = true
+tower.workspace = true

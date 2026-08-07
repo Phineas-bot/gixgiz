@@ -36,18 +36,53 @@ class AppLocalizationsEn extends AppLocalizations {
       'GixGiz is checking whether the local core is available.';
 
   @override
-  String get readyPlaceholderTitle => 'Presentation placeholder';
+  String get coreReadyTitle => 'Platform core ready';
 
   @override
-  String get readyPlaceholderMessage =>
-      'A future verified core response can render here. This shell has not verified local AI readiness.';
+  String get coreReadyMessage =>
+      'The authenticated Rust platform core is available.';
 
   @override
   String get notConnectedTitle => 'Core not connected';
 
   @override
   String get notConnectedMessage =>
-      'This foundation build contains the desktop shell only. Local AI setup is not available yet.';
+      'The local platform core is unavailable. Check again before continuing.';
+
+  @override
+  String get missingCoreTitle => 'Core component missing';
+
+  @override
+  String get missingCoreMessage =>
+      'The bundled Rust core could not be found. Repair or reinstall GixGiz, then try again.';
+
+  @override
+  String get startupTimedOutTitle => 'Core startup timed out';
+
+  @override
+  String get startupTimedOutMessage =>
+      'The local core did not complete its secure startup in time. Close GixGiz and try again.';
+
+  @override
+  String get connectionLostTitle => 'Core connection lost';
+
+  @override
+  String get connectionLostMessage =>
+      'The authenticated local connection ended unexpectedly. Check again to reconnect.';
+
+  @override
+  String get protocolMismatchTitle => 'Core update required';
+
+  @override
+  String get protocolMismatchMessage =>
+      'The desktop and bundled core use incompatible protocol versions. Repair or update GixGiz.';
+
+  @override
+  String get authenticationFailedTitle => 'Core authentication failed';
+
+  @override
+  String get authenticationFailedMessage =>
+      'The secure local session could not be authenticated. Restart GixGiz to create a new session.';
 
   @override
   String get degradedTitle => 'Core connection degraded';
@@ -91,6 +126,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inProgressSemanticValue => 'In progress';
+
+  @override
+  String get coreApplicationLabel => 'Application';
+
+  @override
+  String get coreVersionLabel => 'Core version';
+
+  @override
+  String get protocolVersionLabel => 'Protocol';
+
+  @override
+  String get readinessLabel => 'Readiness';
+
+  @override
+  String get unknownValue => 'Unknown';
+
+  @override
+  String coreDetailsSemanticLabel(
+    String application,
+    String version,
+    String protocol,
+    String readiness,
+  ) {
+    return 'Core details: application $application, version $version, protocol $protocol, readiness $readiness';
+  }
 
   @override
   String get aboutSummary => 'Local-first desktop foundation';

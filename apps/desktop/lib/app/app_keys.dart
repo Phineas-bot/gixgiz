@@ -8,4 +8,5 @@ abstract final class AppKeys {
   static const foundationProgress = ValueKey<String>('foundation.progress');
   static const primaryAction = ValueKey<String>('foundation.primary_action');
   static const diagnostics = ValueKey<String>('foundation.diagnostics');
+  static const coreDetails = ValueKey<String>('foundation.core_details');
 }

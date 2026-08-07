@@ -143,17 +143,17 @@ abstract class AppLocalizations {
   /// **'GixGiz is checking whether the local core is available.'**
   String get loadingMessage;
 
-  /// No description provided for @readyPlaceholderTitle.
+  /// No description provided for @coreReadyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Presentation placeholder'**
-  String get readyPlaceholderTitle;
+  /// **'Platform core ready'**
+  String get coreReadyTitle;
 
-  /// No description provided for @readyPlaceholderMessage.
+  /// No description provided for @coreReadyMessage.
   ///
   /// In en, this message translates to:
-  /// **'A future verified core response can render here. This shell has not verified local AI readiness.'**
-  String get readyPlaceholderMessage;
+  /// **'The authenticated Rust platform core is available.'**
+  String get coreReadyMessage;
 
   /// No description provided for @notConnectedTitle.
   ///
@@ -164,8 +164,68 @@ abstract class AppLocalizations {
   /// No description provided for @notConnectedMessage.
   ///
   /// In en, this message translates to:
-  /// **'This foundation build contains the desktop shell only. Local AI setup is not available yet.'**
+  /// **'The local platform core is unavailable. Check again before continuing.'**
   String get notConnectedMessage;
+
+  /// No description provided for @missingCoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Core component missing'**
+  String get missingCoreTitle;
+
+  /// No description provided for @missingCoreMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The bundled Rust core could not be found. Repair or reinstall GixGiz, then try again.'**
+  String get missingCoreMessage;
+
+  /// No description provided for @startupTimedOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Core startup timed out'**
+  String get startupTimedOutTitle;
+
+  /// No description provided for @startupTimedOutMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The local core did not complete its secure startup in time. Close GixGiz and try again.'**
+  String get startupTimedOutMessage;
+
+  /// No description provided for @connectionLostTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Core connection lost'**
+  String get connectionLostTitle;
+
+  /// No description provided for @connectionLostMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The authenticated local connection ended unexpectedly. Check again to reconnect.'**
+  String get connectionLostMessage;
+
+  /// No description provided for @protocolMismatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Core update required'**
+  String get protocolMismatchTitle;
+
+  /// No description provided for @protocolMismatchMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The desktop and bundled core use incompatible protocol versions. Repair or update GixGiz.'**
+  String get protocolMismatchMessage;
+
+  /// No description provided for @authenticationFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Core authentication failed'**
+  String get authenticationFailedTitle;
+
+  /// No description provided for @authenticationFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The secure local session could not be authenticated. Restart GixGiz to create a new session.'**
+  String get authenticationFailedMessage;
 
   /// No description provided for @degradedTitle.
   ///
@@ -238,6 +298,47 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In progress'**
   String get inProgressSemanticValue;
+
+  /// No description provided for @coreApplicationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Application'**
+  String get coreApplicationLabel;
+
+  /// No description provided for @coreVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Core version'**
+  String get coreVersionLabel;
+
+  /// No description provided for @protocolVersionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Protocol'**
+  String get protocolVersionLabel;
+
+  /// No description provided for @readinessLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Readiness'**
+  String get readinessLabel;
+
+  /// No description provided for @unknownValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknownValue;
+
+  /// No description provided for @coreDetailsSemanticLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Core details: application {application}, version {version}, protocol {protocol}, readiness {readiness}'**
+  String coreDetailsSemanticLabel(
+    String application,
+    String version,
+    String protocol,
+    String readiness,
+  );
 
   /// No description provided for @aboutSummary.
   ///

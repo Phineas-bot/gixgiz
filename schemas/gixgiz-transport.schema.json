@@ -1,0 +1,959 @@
+{
+  "$defs": {
+    "ApplicationInfo": {
+      "description": "Application and boundary-version information exposed by the platform core.",
+      "properties": {
+        "application_id": {
+          "description": "Stable application identity used by desktop packaging.",
+          "type": "string"
+        },
+        "name": {
+          "description": "User-facing product name.",
+          "type": "string"
+        },
+        "protocol_version": {
+          "description": "Transport contract version expected by compatible clients.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "schema_version": {
+          "description": "Serialized contract schema version.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "version": {
+          "description": "Semantic version of the running platform core.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "application_id",
+        "version",
+        "protocol_version",
+        "schema_version"
+      ],
+      "type": "object"
+    },
+    "BootstrapReady": {
+      "description": "Public bootstrap result returned through stdout after loopback binding.",
+      "properties": {
+        "instance_id": {
+          "$ref": "#/$defs/InstanceId",
+          "description": "Opaque identifier for the running sidecar instance."
+        },
+        "port": {
+          "description": "Dynamically assigned loopback TCP port.",
+          "format": "uint16",
+          "maximum": 65535,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "protocol_max": {
+          "description": "Newest protocol version supported by the sidecar.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "protocol_min": {
+          "description": "Oldest protocol version supported by the sidecar.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "schema_version": {
+          "description": "Schema generation used by this bootstrap response.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "port",
+        "instance_id",
+        "protocol_min",
+        "protocol_max"
+      ],
+      "type": "object"
+    },
+    "BootstrapRequest": {
+      "description": "One-line secret bootstrap payload written through the inherited stdin pipe.",
+      "properties": {
+        "bearer_token": {
+          "description": "Hex-encoded 256-bit per-launch bearer token.",
+          "type": "string"
+        },
+        "protocol_max": {
+          "description": "Newest protocol version accepted by the launching desktop.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "protocol_min": {
+          "description": "Oldest protocol version accepted by the launching desktop.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "supervision_nonce": {
+          "$ref": "#/$defs/SupervisionNonce",
+          "description": "Opaque nonce unique to this supervision session."
+        },
+        "supervisor_process_id": {
+          "description": "Process identifier of the supervising desktop process.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "bearer_token",
+        "protocol_min",
+        "protocol_max",
+        "supervisor_process_id",
+        "supervision_nonce"
+      ],
+      "type": "object"
+    },
+    "CancelOperationRequest": {
+      "description": "Authenticated explicit cancellation request.",
+      "properties": {
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier shared with the operation being cancelled."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier unique to this cancellation request."
+        }
+      },
+      "required": [
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "CancelOperationResponse": {
+      "description": "Result of accepting or observing an explicit cancellation request.",
+      "properties": {
+        "accepted": {
+          "description": "Whether the host accepted cancellation for a non-terminal operation.",
+          "type": "boolean"
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier copied from the cancellation request."
+        },
+        "operation_id": {
+          "$ref": "#/$defs/OperationId",
+          "description": "Operation targeted by the cancellation request."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier copied from the cancellation request."
+        }
+      },
+      "required": [
+        "operation_id",
+        "accepted",
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "ClientHello": {
+      "description": "First authenticated request sent by the Flutter desktop.",
+      "properties": {
+        "client_name": {
+          "description": "Stable client name, such as the GixGiz desktop shell.",
+          "type": "string"
+        },
+        "client_version": {
+          "description": "Semantic version of the desktop client.",
+          "type": "string"
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier shared by the handshake response and any safe failure."
+        },
+        "protocol_max": {
+          "description": "Newest protocol version accepted by the client.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "protocol_min": {
+          "description": "Oldest protocol version accepted by the client.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier unique to this handshake request."
+        },
+        "requested_capabilities": {
+          "description": "Optional capabilities requested for this launch session.",
+          "items": {
+            "$ref": "#/$defs/TransportCapability"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "client_name",
+        "client_version",
+        "protocol_min",
+        "protocol_max",
+        "requested_capabilities",
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "CoreHello": {
+      "description": "Successful protocol and capability negotiation returned by the core.",
+      "properties": {
+        "application": {
+          "$ref": "#/$defs/ApplicationInfo",
+          "description": "Identity and versions compiled into the running core."
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Correlation identifier copied from the client hello."
+        },
+        "instance_id": {
+          "$ref": "#/$defs/InstanceId",
+          "description": "Opaque identifier for this sidecar process instance."
+        },
+        "readiness": {
+          "$ref": "#/$defs/ReadinessReport",
+          "description": "Authoritative current core readiness."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Request identifier copied from the client hello."
+        },
+        "selected_protocol": {
+          "description": "Protocol version selected from the overlapping supported ranges.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "supported_capabilities": {
+          "description": "Capabilities supported by this internal core build.",
+          "items": {
+            "$ref": "#/$defs/TransportCapability"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "application",
+        "selected_protocol",
+        "supported_capabilities",
+        "readiness",
+        "instance_id",
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "CorrelationId": {
+      "description": "Identifier shared by events and failures from one logical operation.",
+      "format": "uuid",
+      "type": "string"
+    },
+    "ErrorCategory": {
+      "description": "Stable failure taxonomy used across GixGiz process boundaries.",
+      "oneOf": [
+        {
+          "const": "invalid_input",
+          "description": "Input failed validation.",
+          "type": "string"
+        },
+        {
+          "const": "permission_denied",
+          "description": "The caller lacks permission for the requested operation.",
+          "type": "string"
+        },
+        {
+          "const": "not_supported",
+          "description": "The requested capability is not supported.",
+          "type": "string"
+        },
+        {
+          "const": "unavailable",
+          "description": "A required resource or service is currently unavailable.",
+          "type": "string"
+        },
+        {
+          "const": "conflict",
+          "description": "Current state conflicts with the requested operation.",
+          "type": "string"
+        },
+        {
+          "const": "resource_exhausted",
+          "description": "A bounded resource is exhausted.",
+          "type": "string"
+        },
+        {
+          "const": "cancelled",
+          "description": "The operation was cancelled.",
+          "type": "string"
+        },
+        {
+          "const": "timed_out",
+          "description": "The operation exceeded its deadline.",
+          "type": "string"
+        },
+        {
+          "const": "integrity_failure",
+          "description": "Integrity verification failed.",
+          "type": "string"
+        },
+        {
+          "const": "incompatible_version",
+          "description": "A component or protocol version is incompatible.",
+          "type": "string"
+        },
+        {
+          "const": "degraded",
+          "description": "The operation completed with reduced capability.",
+          "type": "string"
+        },
+        {
+          "const": "internal",
+          "description": "An internal failure has no safer specific category.",
+          "type": "string"
+        },
+        {
+          "const": "unknown",
+          "description": "A newer peer supplied an unrecognized category.",
+          "type": "string"
+        }
+      ]
+    },
+    "HealthRequest": {
+      "description": "Authenticated request for current platform status.",
+      "properties": {
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier shared by the response and any safe failure."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier unique to this request."
+        }
+      },
+      "required": [
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "HealthResponse": {
+      "description": "Current authoritative core status with boundary identifiers.",
+      "properties": {
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier copied from the request."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier copied from the request."
+        },
+        "status": {
+          "$ref": "#/$defs/PlatformStatus",
+          "description": "Version and readiness reported by the running platform core."
+        }
+      },
+      "required": [
+        "status",
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "InstanceId": {
+      "description": "Opaque identifier for one running core instance.",
+      "format": "uuid",
+      "type": "string"
+    },
+    "OperationId": {
+      "description": "Opaque identifier for one core operation.",
+      "format": "uuid",
+      "type": "string"
+    },
+    "PlatformStatus": {
+      "description": "Combined version and readiness response produced by the platform core.",
+      "properties": {
+        "application": {
+          "$ref": "#/$defs/ApplicationInfo",
+          "description": "Identity and version information for the responding core."
+        },
+        "readiness": {
+          "$ref": "#/$defs/ReadinessReport",
+          "description": "Current readiness plus its supporting service evidence."
+        }
+      },
+      "required": [
+        "application",
+        "readiness"
+      ],
+      "type": "object"
+    },
+    "ReadinessReport": {
+      "description": "Overall readiness plus the complete evidence used to calculate it.",
+      "properties": {
+        "services": {
+          "description": "Complete service evidence used for the calculation.",
+          "items": {
+            "$ref": "#/$defs/ServiceHealth"
+          },
+          "type": "array"
+        },
+        "status": {
+          "$ref": "#/$defs/ReadinessStatus",
+          "description": "Overall readiness calculated from all service evidence."
+        },
+        "summary": {
+          "description": "Safe plain-language explanation of the calculated status.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "summary",
+        "services"
+      ],
+      "type": "object"
+    },
+    "ReadinessStatus": {
+      "description": "Overall readiness calculated from explicit service evidence.",
+      "oneOf": [
+        {
+          "const": "ready",
+          "description": "Every mandatory service is healthy and no service is impaired.",
+          "type": "string"
+        },
+        {
+          "const": "degraded",
+          "description": "The core is usable, but at least one capability is impaired.",
+          "type": "string"
+        },
+        {
+          "const": "unavailable",
+          "description": "A mandatory service is not currently available.",
+          "type": "string"
+        },
+        {
+          "const": "failed",
+          "description": "A mandatory service reported an explicit failure.",
+          "type": "string"
+        },
+        {
+          "const": "unknown",
+          "description": "A newer peer supplied an unrecognized readiness value.",
+          "type": "string"
+        }
+      ]
+    },
+    "RecoveryAction": {
+      "description": "Recommended safe next action for a boundary failure.",
+      "oneOf": [
+        {
+          "const": "retry",
+          "description": "Retry the operation without changing configuration.",
+          "type": "string"
+        },
+        {
+          "const": "restart",
+          "description": "Restart the affected GixGiz component.",
+          "type": "string"
+        },
+        {
+          "const": "check_prerequisites",
+          "description": "Review and correct platform prerequisites.",
+          "type": "string"
+        },
+        {
+          "const": "contact_support",
+          "description": "Escalate using sanitized diagnostics.",
+          "type": "string"
+        },
+        {
+          "const": "no_action",
+          "description": "No recovery action is necessary.",
+          "type": "string"
+        },
+        {
+          "const": "unknown",
+          "description": "A newer peer supplied an unrecognized recovery action.",
+          "type": "string"
+        }
+      ]
+    },
+    "RecoveryGuidance": {
+      "description": "Plain-language recovery information safe to show to a user.",
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/RecoveryAction",
+          "description": "Stable action that a client may present or interpret."
+        },
+        "message": {
+          "description": "Safe plain-language explanation of the next step.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "message"
+      ],
+      "type": "object"
+    },
+    "RequestId": {
+      "description": "Identifier for one request within a wider correlated operation.",
+      "format": "uuid",
+      "type": "string"
+    },
+    "SafeErrorPayload": {
+      "description": "Error payload that excludes raw causes, private input, and provider output.",
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/ErrorCategory",
+          "description": "Stable broad classification of the failure."
+        },
+        "code": {
+          "description": "Stable machine-readable error code.",
+          "type": "string"
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier shared by related operations and events."
+        },
+        "message": {
+          "description": "Safe user-facing error message.",
+          "type": "string"
+        },
+        "recovery": {
+          "$ref": "#/$defs/RecoveryGuidance",
+          "description": "Recommended recovery action and explanation."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier unique to the failed request."
+        }
+      },
+      "required": [
+        "category",
+        "code",
+        "message",
+        "recovery",
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "ServiceHealth": {
+      "description": "Safe, provider-neutral health record for one platform service.",
+      "properties": {
+        "display_name": {
+          "description": "Safe user-facing service name.",
+          "type": "string"
+        },
+        "message": {
+          "description": "Optional safe explanation containing no raw provider output.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "requirement": {
+          "$ref": "#/$defs/ServiceRequirement",
+          "description": "Whether the service is required for readiness."
+        },
+        "service_id": {
+          "description": "Stable provider-neutral service identifier.",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ServiceHealthStatus",
+          "description": "Current observed health state."
+        }
+      },
+      "required": [
+        "service_id",
+        "display_name",
+        "requirement",
+        "status"
+      ],
+      "type": "object"
+    },
+    "ServiceHealthStatus": {
+      "description": "Health evidence reported by one provider-neutral service.",
+      "oneOf": [
+        {
+          "const": "healthy",
+          "description": "The service passed its current health check.",
+          "type": "string"
+        },
+        {
+          "const": "degraded",
+          "description": "The service is available with reduced capability.",
+          "type": "string"
+        },
+        {
+          "const": "unavailable",
+          "description": "The service cannot currently be reached or used.",
+          "type": "string"
+        },
+        {
+          "const": "failed",
+          "description": "The service reported an explicit failure.",
+          "type": "string"
+        },
+        {
+          "const": "unknown",
+          "description": "A newer peer supplied an unrecognized health value.",
+          "type": "string"
+        }
+      ]
+    },
+    "ServiceRequirement": {
+      "description": "Whether a service is required for readiness or only improves capability.",
+      "oneOf": [
+        {
+          "const": "mandatory",
+          "description": "Readiness depends on this service.",
+          "type": "string"
+        },
+        {
+          "const": "optional",
+          "description": "The platform can remain available without this service.",
+          "type": "string"
+        },
+        {
+          "const": "unknown",
+          "description": "A newer peer supplied an unrecognized requirement.",
+          "type": "string"
+        }
+      ]
+    },
+    "ShutdownRequest": {
+      "description": "Authenticated request for bounded sidecar shutdown.",
+      "properties": {
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier shared with the response and any safe failure."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier unique to this shutdown request."
+        }
+      },
+      "required": [
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "ShutdownResponse": {
+      "description": "Acknowledgement that bounded shutdown was accepted.",
+      "properties": {
+        "accepted": {
+          "description": "Whether the host accepted the shutdown signal.",
+          "type": "boolean"
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier copied from the shutdown request."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier copied from the shutdown request."
+        }
+      },
+      "required": [
+        "accepted",
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "SupervisionNonce": {
+      "description": "Opaque nonce tying a sidecar to one desktop supervision session.",
+      "format": "uuid",
+      "type": "string"
+    },
+    "TestOperationEvent": {
+      "description": "Ordered provider-neutral event used to prove the Task 04 stream foundation.",
+      "properties": {
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier shared by every event for the operation."
+        },
+        "kind": {
+          "$ref": "#/$defs/TestOperationEventKind",
+          "description": "Stable event classification."
+        },
+        "message": {
+          "description": "Optional safe provider-neutral progress explanation.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/OperationId",
+          "description": "Operation that owns this event stream."
+        },
+        "schema_version": {
+          "description": "Schema generation for this event payload.",
+          "format": "uint32",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "sequence": {
+          "description": "Monotonically increasing sequence number starting at one.",
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        },
+        "terminal_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TestOperationTerminalState"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Terminal state present only on the final event."
+        },
+        "timestamp_unix_ms": {
+          "description": "Milliseconds since the Unix epoch, captured by the host.",
+          "format": "uint64",
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schema_version",
+        "operation_id",
+        "correlation_id",
+        "sequence",
+        "kind",
+        "timestamp_unix_ms"
+      ],
+      "type": "object"
+    },
+    "TestOperationEventKind": {
+      "description": "Stable kinds emitted by the deterministic foundation event operation.",
+      "oneOf": [
+        {
+          "const": "started",
+          "description": "The operation was accepted and began.",
+          "type": "string"
+        },
+        {
+          "const": "progress",
+          "description": "One deterministic progress step completed.",
+          "type": "string"
+        },
+        {
+          "const": "completed",
+          "description": "The operation reached its successful terminal state.",
+          "type": "string"
+        },
+        {
+          "const": "cancelled",
+          "description": "The operation observed explicit cancellation.",
+          "type": "string"
+        },
+        {
+          "const": "failed",
+          "description": "The operation reached an explicit failed terminal state.",
+          "type": "string"
+        },
+        {
+          "const": "timed_out",
+          "description": "The operation exceeded its bounded deadline.",
+          "type": "string"
+        },
+        {
+          "const": "unknown",
+          "description": "A newer peer supplied an event kind this build does not recognize.",
+          "type": "string"
+        }
+      ]
+    },
+    "TestOperationStartRequest": {
+      "description": "Authenticated request to start the deterministic foundation event operation.",
+      "properties": {
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier shared by all events and safe failures for the operation."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier unique to this start request."
+        }
+      },
+      "required": [
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "TestOperationStartResponse": {
+      "description": "Accepted deterministic foundation operation.",
+      "properties": {
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId",
+          "description": "Identifier copied from the start request."
+        },
+        "operation_id": {
+          "$ref": "#/$defs/OperationId",
+          "description": "Opaque identifier used for event subscription and cancellation."
+        },
+        "request_id": {
+          "$ref": "#/$defs/RequestId",
+          "description": "Identifier copied from the start request."
+        }
+      },
+      "required": [
+        "operation_id",
+        "correlation_id",
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "TestOperationTerminalState": {
+      "description": "Terminal result carried by the final deterministic operation event.",
+      "oneOf": [
+        {
+          "const": "completed",
+          "description": "All deterministic steps completed.",
+          "type": "string"
+        },
+        {
+          "const": "cancelled",
+          "description": "Explicit cancellation was observed.",
+          "type": "string"
+        },
+        {
+          "const": "failed",
+          "description": "The operation failed safely.",
+          "type": "string"
+        },
+        {
+          "const": "timed_out",
+          "description": "The operation exceeded its deadline.",
+          "type": "string"
+        },
+        {
+          "const": "unknown",
+          "description": "A newer peer supplied a terminal state this build does not recognize.",
+          "type": "string"
+        }
+      ]
+    },
+    "TransportCapability": {
+      "description": "Capabilities negotiated between the desktop and the internal core sidecar.",
+      "oneOf": [
+        {
+          "const": "health",
+          "description": "Query core identity, health, and readiness.",
+          "type": "string"
+        },
+        {
+          "const": "test_operation_events",
+          "description": "Start and observe the deterministic Task 04 event operation.",
+          "type": "string"
+        },
+        {
+          "const": "cancellation",
+          "description": "Explicitly cancel an operation.",
+          "type": "string"
+        },
+        {
+          "const": "shutdown",
+          "description": "Request bounded sidecar shutdown.",
+          "type": "string"
+        },
+        {
+          "const": "unknown",
+          "description": "A newer peer supplied a capability this build does not recognize.",
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "bootstrap_ready": {
+      "$ref": "#/$defs/BootstrapReady"
+    },
+    "bootstrap_request": {
+      "$ref": "#/$defs/BootstrapRequest"
+    },
+    "cancel_operation_request": {
+      "$ref": "#/$defs/CancelOperationRequest"
+    },
+    "cancel_operation_response": {
+      "$ref": "#/$defs/CancelOperationResponse"
+    },
+    "client_hello": {
+      "$ref": "#/$defs/ClientHello"
+    },
+    "core_hello": {
+      "$ref": "#/$defs/CoreHello"
+    },
+    "health_request": {
+      "$ref": "#/$defs/HealthRequest"
+    },
+    "health_response": {
+      "$ref": "#/$defs/HealthResponse"
+    },
+    "safe_error_payload": {
+      "$ref": "#/$defs/SafeErrorPayload"
+    },
+    "shutdown_request": {
+      "$ref": "#/$defs/ShutdownRequest"
+    },
+    "shutdown_response": {
+      "$ref": "#/$defs/ShutdownResponse"
+    },
+    "test_operation_event": {
+      "$ref": "#/$defs/TestOperationEvent"
+    },
+    "test_operation_start_request": {
+      "$ref": "#/$defs/TestOperationStartRequest"
+    },
+    "test_operation_start_response": {
+      "$ref": "#/$defs/TestOperationStartResponse"
+    }
+  },
+  "required": [
+    "bootstrap_request",
+    "bootstrap_ready",
+    "client_hello",
+    "core_hello",
+    "health_request",
+    "health_response",
+    "test_operation_start_request",
+    "test_operation_start_response",
+    "test_operation_event",
+    "cancel_operation_request",
+    "cancel_operation_response",
+    "shutdown_request",
+    "shutdown_response",
+    "safe_error_payload"
+  ],
+  "title": "TransportContractDocument",
+  "type": "object"
+}

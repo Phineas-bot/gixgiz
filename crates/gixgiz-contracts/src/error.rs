@@ -1,11 +1,12 @@
 use std::fmt;
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{CorrelationId, RequestId};
 
 /// Stable failure taxonomy used across GixGiz process boundaries.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum ErrorCategory {
@@ -39,7 +40,7 @@ pub enum ErrorCategory {
 }
 
 /// Recommended safe next action for a boundary failure.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum RecoveryAction {
@@ -59,7 +60,7 @@ pub enum RecoveryAction {
 }
 
 /// Plain-language recovery information safe to show to a user.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 pub struct RecoveryGuidance {
     /// Stable action that a client may present or interpret.
     pub action: RecoveryAction,
@@ -68,7 +69,7 @@ pub struct RecoveryGuidance {
 }
 
 /// Error payload that excludes raw causes, private input, and provider output.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 pub struct SafeErrorPayload {
     /// Stable broad classification of the failure.
     pub category: ErrorCategory,
