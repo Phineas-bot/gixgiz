@@ -14,6 +14,7 @@ pub fn init_tracing() -> Result<(), TracingInitError> {
         .with_max_level(tracing::Level::INFO)
         .with_target(false)
         .without_time()
+        .with_writer(std::io::stderr)
         .compact()
         .finish();
 
