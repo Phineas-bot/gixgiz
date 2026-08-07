@@ -1,3 +1,5 @@
+import 'package:gixgiz_desktop/core/core_client.dart';
+
 sealed class FoundationState {
   const FoundationState();
 }
@@ -6,21 +8,32 @@ final class FoundationLoading extends FoundationState {
   const FoundationLoading();
 }
 
-final class FoundationReadyPlaceholder extends FoundationState {
-  const FoundationReadyPlaceholder();
+final class FoundationReady extends FoundationState {
+  const FoundationReady({required this.snapshot});
+
+  final CoreConnectionSnapshot snapshot;
 }
 
-enum FoundationDegradedReason { notConnected, degraded }
+final class FoundationDegraded extends FoundationState {
+  const FoundationDegraded({required this.snapshot});
 
-final class FoundationDegradedPlaceholder extends FoundationState {
-  const FoundationDegradedPlaceholder({required this.reason});
+  final CoreConnectionSnapshot snapshot;
+}
 
-  final FoundationDegradedReason reason;
+final class FoundationUnavailable extends FoundationState {
+  const FoundationUnavailable({
+    required this.issue,
+    required this.diagnosticCode,
+  });
+
+  final CoreConnectionIssue issue;
+  final String diagnosticCode;
 }
 
 final class FoundationFailed extends FoundationState {
-  const FoundationFailed({required this.diagnosticCode});
+  const FoundationFailed({required this.issue, required this.diagnosticCode});
 
+  final CoreConnectionIssue issue;
   final String diagnosticCode;
 }
 

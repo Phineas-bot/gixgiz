@@ -32,6 +32,40 @@ set(CMAKE_CXX_FLAGS_PROFILE "${CMAKE_CXX_FLAGS_RELEASE}")
 # Use Unicode for all projects.
 add_definitions(-DUNICODE -D_UNICODE)
 
+# Build the authenticated Rust sidecar into a project-local Cargo target
+# directory so every Windows bundle contains the tested desktop/core pair.
+set(GIXGIZ_REPOSITORY_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
+find_program(CARGO_EXECUTABLE NAMES cargo
+  HINTS "$ENV{USERPROFILE}/.cargo/bin"
+  REQUIRED)
+set(GIXGIZ_RUST_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/rust")
+set(GIXGIZ_CORE_EXECUTABLE
+  "${GIXGIZ_RUST_TARGET_DIR}/release/gixgiz-core.exe")
+file(GLOB_RECURSE GIXGIZ_RUST_SOURCES CONFIGURE_DEPENDS
+  "${GIXGIZ_REPOSITORY_ROOT}/crates/gixgiz-contracts/src/*.rs"
+  "${GIXGIZ_REPOSITORY_ROOT}/crates/gixgiz-core/src/*.rs"
+  "${GIXGIZ_REPOSITORY_ROOT}/crates/gixgiz-desktop-host/src/*.rs")
+add_custom_command(
+  OUTPUT "${GIXGIZ_CORE_EXECUTABLE}"
+  COMMAND "${CMAKE_COMMAND}" -E env
+    "CARGO_TARGET_DIR=${GIXGIZ_RUST_TARGET_DIR}"
+    "${CARGO_EXECUTABLE}" build
+    --manifest-path "${GIXGIZ_REPOSITORY_ROOT}/Cargo.toml"
+    --package gixgiz-desktop-host
+    --bin gixgiz-core
+    --release
+    --locked
+  DEPENDS
+    "${GIXGIZ_REPOSITORY_ROOT}/Cargo.toml"
+    "${GIXGIZ_REPOSITORY_ROOT}/Cargo.lock"
+    "${GIXGIZ_REPOSITORY_ROOT}/rust-toolchain.toml"
+    ${GIXGIZ_RUST_SOURCES}
+  WORKING_DIRECTORY "${GIXGIZ_REPOSITORY_ROOT}"
+  COMMENT "Building authenticated GixGiz Rust sidecar"
+  VERBATIM)
+add_custom_target(gixgiz_core_sidecar ALL
+  DEPENDS "${GIXGIZ_CORE_EXECUTABLE}")
+
 # Compilation settings that should be applied to most targets.
 #
 # Be cautious about adding new options here, as plugins use this function by
@@ -51,6 +85,7 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
+add_dependencies(${BINARY_NAME} gixgiz_core_sidecar)
 
 
 # Generated plugin build rules, which manage building the plugins and adding
@@ -73,6 +108,10 @@ set(INSTALL_BUNDLE_DATA_DIR "${CMAKE_INSTALL_PREFIX}/data")
 set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}")
 
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
+  COMPONENT Runtime)
+
+install(PROGRAMS "${GIXGIZ_CORE_EXECUTABLE}"
+  DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
   COMPONENT Runtime)
 
 install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"

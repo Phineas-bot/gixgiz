@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gixgiz_desktop/app/app_keys.dart';
+import 'package:gixgiz_desktop/core/core_client.dart';
 import 'package:gixgiz_desktop/features/foundation/foundation_state.dart';
 import 'package:gixgiz_desktop/l10n/app_localizations.dart';
 import 'package:gixgiz_desktop/shared/page_header.dart';
@@ -61,38 +62,86 @@ class FoundationScreen extends StatelessWidget {
         icon: Icons.sync,
         tone: _StatusTone.neutral,
       ),
-      FoundationReadyPlaceholder() => _FoundationStatus(
-        title: localizations.readyPlaceholderTitle,
-        message: localizations.readyPlaceholderMessage,
+      FoundationReady(:final snapshot) => _FoundationStatus(
+        title: localizations.coreReadyTitle,
+        message: snapshot.readinessSummary ?? localizations.coreReadyMessage,
         icon: Icons.check_circle_outline,
         tone: _StatusTone.ready,
       ),
-      FoundationDegradedPlaceholder(
-        reason: FoundationDegradedReason.notConnected,
-      ) =>
-        _FoundationStatus(
-          title: localizations.notConnectedTitle,
-          message: localizations.notConnectedMessage,
-          icon: Icons.link_off,
-          tone: _StatusTone.warning,
-        ),
-      FoundationDegradedPlaceholder() => _FoundationStatus(
+      FoundationDegraded(:final snapshot) => _FoundationStatus(
         title: localizations.degradedTitle,
-        message: localizations.degradedMessage,
+        message: snapshot.readinessSummary ?? localizations.degradedMessage,
         icon: Icons.warning_amber,
         tone: _StatusTone.warning,
       ),
-      FoundationFailed() => _FoundationStatus(
-        title: localizations.failedTitle,
-        message: localizations.failedMessage,
-        icon: Icons.error_outline,
-        tone: _StatusTone.error,
+      FoundationUnavailable(:final issue) => _unavailableStatus(
+        localizations,
+        issue,
       ),
+      FoundationFailed(:final issue) => _failedStatus(localizations, issue),
       FoundationCancelled() => _FoundationStatus(
         title: localizations.cancelledTitle,
         message: localizations.cancelledMessage,
         icon: Icons.cancel_outlined,
         tone: _StatusTone.neutral,
+      ),
+    };
+  }
+
+  _FoundationStatus _unavailableStatus(
+    AppLocalizations localizations,
+    CoreConnectionIssue issue,
+  ) {
+    return switch (issue) {
+      CoreConnectionIssue.missingCore => _FoundationStatus(
+        title: localizations.missingCoreTitle,
+        message: localizations.missingCoreMessage,
+        icon: Icons.extension_off_outlined,
+        tone: _StatusTone.error,
+      ),
+      CoreConnectionIssue.startupTimedOut => _FoundationStatus(
+        title: localizations.startupTimedOutTitle,
+        message: localizations.startupTimedOutMessage,
+        icon: Icons.timer_off_outlined,
+        tone: _StatusTone.warning,
+      ),
+      CoreConnectionIssue.connectionLost => _FoundationStatus(
+        title: localizations.connectionLostTitle,
+        message: localizations.connectionLostMessage,
+        icon: Icons.link_off,
+        tone: _StatusTone.warning,
+      ),
+      _ => _FoundationStatus(
+        title: localizations.notConnectedTitle,
+        message: localizations.notConnectedMessage,
+        icon: Icons.link_off,
+        tone: _StatusTone.warning,
+      ),
+    };
+  }
+
+  _FoundationStatus _failedStatus(
+    AppLocalizations localizations,
+    CoreConnectionIssue issue,
+  ) {
+    return switch (issue) {
+      CoreConnectionIssue.protocolMismatch => _FoundationStatus(
+        title: localizations.protocolMismatchTitle,
+        message: localizations.protocolMismatchMessage,
+        icon: Icons.system_update_alt,
+        tone: _StatusTone.error,
+      ),
+      CoreConnectionIssue.authenticationFailed => _FoundationStatus(
+        title: localizations.authenticationFailedTitle,
+        message: localizations.authenticationFailedMessage,
+        icon: Icons.lock_outline,
+        tone: _StatusTone.error,
+      ),
+      _ => _FoundationStatus(
+        title: localizations.failedTitle,
+        message: localizations.failedMessage,
+        icon: Icons.error_outline,
+        tone: _StatusTone.error,
       ),
     };
   }
@@ -120,6 +169,11 @@ class _StatusPanel extends StatelessWidget {
       _StatusTone.warning => colorScheme.tertiary,
       _StatusTone.error => colorScheme.error,
       _StatusTone.neutral => colorScheme.secondary,
+    };
+    final snapshot = switch (state) {
+      FoundationReady(:final snapshot) ||
+      FoundationDegraded(:final snapshot) => snapshot,
+      _ => null,
     };
 
     return Card(
@@ -171,7 +225,13 @@ class _StatusPanel extends StatelessWidget {
                 child: const LinearProgressIndicator(),
               ),
             ],
-            if (state case FoundationFailed(:final diagnosticCode)) ...[
+            if (snapshot != null) ...[
+              const SizedBox(height: 24),
+              _CoreDetails(snapshot: snapshot),
+            ],
+            if (state
+                case FoundationFailed(:final diagnosticCode) ||
+                    FoundationUnavailable(:final diagnosticCode)) ...[
               const SizedBox(height: 16),
               ExpansionTile(
                 key: AppKeys.diagnostics,
@@ -188,7 +248,8 @@ class _StatusPanel extends StatelessWidget {
                 ],
               ),
             ],
-            if (state is FoundationDegradedPlaceholder ||
+            if (state is FoundationDegraded ||
+                state is FoundationUnavailable ||
                 state is FoundationFailed ||
                 state is FoundationCancelled) ...[
               const SizedBox(height: 20),
@@ -205,6 +266,87 @@ class _StatusPanel extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CoreDetails extends StatelessWidget {
+  const _CoreDetails({required this.snapshot});
+
+  final CoreConnectionSnapshot snapshot;
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final readiness =
+        snapshot.readiness?.wireValue ?? localizations.unknownValue;
+    return Semantics(
+      key: AppKeys.coreDetails,
+      container: true,
+      label: localizations.coreDetailsSemanticLabel(
+        snapshot.applicationName ?? localizations.unknownValue,
+        snapshot.coreVersion ?? localizations.unknownValue,
+        snapshot.protocolVersion?.toString() ?? localizations.unknownValue,
+        readiness,
+      ),
+      child: ExcludeSemantics(
+        child: Wrap(
+          spacing: 32,
+          runSpacing: 16,
+          children: [
+            _Detail(
+              label: localizations.coreApplicationLabel,
+              value: snapshot.applicationName ?? localizations.unknownValue,
+              textTheme: textTheme,
+            ),
+            _Detail(
+              label: localizations.coreVersionLabel,
+              value: snapshot.coreVersion ?? localizations.unknownValue,
+              textTheme: textTheme,
+            ),
+            _Detail(
+              label: localizations.protocolVersionLabel,
+              value:
+                  snapshot.protocolVersion?.toString() ??
+                  localizations.unknownValue,
+              textTheme: textTheme,
+            ),
+            _Detail(
+              label: localizations.readinessLabel,
+              value: readiness,
+              textTheme: textTheme,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Detail extends StatelessWidget {
+  const _Detail({
+    required this.label,
+    required this.value,
+    required this.textTheme,
+  });
+
+  final String label;
+  final String value;
+  final TextTheme textTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 160,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: textTheme.labelLarge),
+          const SizedBox(height: 4),
+          Text(value, style: textTheme.bodyLarge),
+        ],
       ),
     );
   }

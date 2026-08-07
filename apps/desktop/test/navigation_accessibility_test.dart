@@ -70,11 +70,16 @@ void main() {
 
     await _pumpFoundation(
       tester,
-      const FoundationDegradedPlaceholder(
-        reason: FoundationDegradedReason.notConnected,
+      const FoundationUnavailable(
+        issue: CoreConnectionIssue.coreUnavailable,
+        diagnosticCode: 'CORE_NOT_CONNECTED',
       ),
       actionFocusNode: actionFocusNode,
     );
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    expect(actionFocusNode.hasFocus, isFalse);
 
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pump();
@@ -94,8 +99,9 @@ void main() {
     try {
       await _pumpFoundation(
         tester,
-        const FoundationDegradedPlaceholder(
-          reason: FoundationDegradedReason.notConnected,
+        const FoundationUnavailable(
+          issue: CoreConnectionIssue.coreUnavailable,
+          diagnosticCode: 'CORE_NOT_CONNECTED',
         ),
       );
 
@@ -125,7 +131,10 @@ void main() {
 
     await _pumpFoundation(
       tester,
-      const FoundationFailed(diagnosticCode: 'CORE_TEST_FAILURE'),
+      const FoundationFailed(
+        issue: CoreConnectionIssue.internalFailure,
+        diagnosticCode: 'CORE_TEST_FAILURE',
+      ),
       textScaler: const TextScaler.linear(2),
     );
 
