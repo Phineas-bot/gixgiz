@@ -1,7 +1,8 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 /// Overall readiness calculated from explicit service evidence.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum ReadinessStatus {
@@ -19,7 +20,7 @@ pub enum ReadinessStatus {
 }
 
 /// Health evidence reported by one provider-neutral service.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum ServiceHealthStatus {
@@ -37,7 +38,7 @@ pub enum ServiceHealthStatus {
 }
 
 /// Whether a service is required for readiness or only improves capability.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 #[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum ServiceRequirement {
@@ -59,7 +60,7 @@ impl ServiceRequirement {
 }
 
 /// Safe, provider-neutral health record for one platform service.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 pub struct ServiceHealth {
     /// Stable provider-neutral service identifier.
     pub service_id: String,
@@ -94,7 +95,7 @@ impl ServiceHealth {
 }
 
 /// Overall readiness plus the complete evidence used to calculate it.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 pub struct ReadinessReport {
     /// Overall readiness calculated from all service evidence.
     pub status: ReadinessStatus,

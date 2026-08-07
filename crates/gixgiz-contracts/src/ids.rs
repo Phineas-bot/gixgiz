@@ -1,10 +1,11 @@
 use std::{fmt, str::FromStr};
 
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 /// Identifier shared by events and failures from one logical operation.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, Hash, JsonSchema, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct CorrelationId(Uuid);
 
@@ -49,7 +50,7 @@ impl FromStr for CorrelationId {
 }
 
 /// Identifier for one request within a wider correlated operation.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, Hash, JsonSchema, PartialEq, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct RequestId(Uuid);
 

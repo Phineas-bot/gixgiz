@@ -1,3 +1,4 @@
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::ReadinessReport;
@@ -18,7 +19,7 @@ pub const PROTOCOL_VERSION: u32 = 1;
 pub const SCHEMA_VERSION: u32 = 1;
 
 /// Application and boundary-version information exposed by the platform core.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 pub struct ApplicationInfo {
     /// User-facing product name.
     pub name: String,
@@ -47,7 +48,7 @@ impl ApplicationInfo {
 }
 
 /// Combined version and readiness response produced by the platform core.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, JsonSchema, PartialEq, Serialize, Deserialize)]
 pub struct PlatformStatus {
     /// Identity and version information for the responding core.
     pub application: ApplicationInfo,

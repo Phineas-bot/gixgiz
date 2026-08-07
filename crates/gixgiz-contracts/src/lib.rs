@@ -10,6 +10,7 @@ mod error;
 mod identity;
 mod ids;
 mod readiness;
+mod transport;
 
 pub use error::{ErrorCategory, RecoveryAction, RecoveryGuidance, SafeErrorPayload};
 pub use identity::{
@@ -19,4 +20,11 @@ pub use identity::{
 pub use ids::{CorrelationId, RequestId};
 pub use readiness::{
     ReadinessReport, ReadinessStatus, ServiceHealth, ServiceHealthStatus, ServiceRequirement,
+};
+pub use transport::{
+    BootstrapReady, BootstrapRequest, CancelOperationRequest, CancelOperationResponse, ClientHello,
+    CoreHello, HealthRequest, HealthResponse, InstanceId, OperationId, ShutdownRequest,
+    ShutdownResponse, SupervisionNonce, TestOperationEvent, TestOperationEventKind,
+    TestOperationStartRequest, TestOperationStartResponse, TestOperationTerminalState,
+    TransportCapability,
 };
