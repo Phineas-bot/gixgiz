@@ -19,7 +19,7 @@ The v0.1 success condition is that a supported non-technical Windows user can mo
 
 ## Status
 
-Flutter Windows desktop-shell and Rust platform-core foundations. The shell remains disconnected from the Rust core until Task 04.
+Flutter Windows desktop shell connected to the supervised Rust platform core through a typed, authenticated, loopback-only Task 04 boundary.
 
 ## Repository map
 
@@ -87,9 +87,9 @@ The root Cargo workspace contains three crates with a strict dependency directio
 gixgiz-desktop-host -> gixgiz-core -> gixgiz-contracts
 ```
 
-- `gixgiz-contracts` owns serializable, provider-neutral identity, readiness, health, error, recovery, and request-correlation contracts.
+- `gixgiz-contracts` owns serializable, provider-neutral identity, readiness, health, handshake, event, cancellation, error, recovery, and request-correlation contracts.
 - `gixgiz-core` owns platform lifecycle, deterministic readiness policy, safe error mapping, diagnostics initialization, cancellation, and timeout conventions.
-- `gixgiz-desktop-host` builds the future sidecar executable as `gixgiz-core.exe` and currently provides composition only. It has no transport, persistence, provider, or operating-system behavior.
+- `gixgiz-desktop-host` builds `gixgiz-core.exe`, reads a per-launch secret from the inherited stdin pipe, and exposes only the authenticated Task 04 HTTP/SSE routes on a dynamic `127.0.0.1` port. It contains no persistence, provider, installer, model, or hardware behavior.
 
 Run the Rust checks from the repository root:
 
@@ -98,6 +98,15 @@ cargo fmt --all -- --check
 cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo test --workspace --all-features
 ```
+
+The Rust contracts generate both [`schemas/gixgiz-transport.schema.json`](./schemas/gixgiz-transport.schema.json) and the checked Dart models. Regenerate or verify them from the repository root:
+
+```powershell
+cargo run -p gixgiz-contracts --example generate_bindings -- --write
+cargo run -p gixgiz-contracts --example generate_bindings -- --check
+```
+
+Transport architecture, bootstrap, routes, security controls, and development checks are documented in [`docs/guides/flutter-rust-transport.md`](./docs/guides/flutter-rust-transport.md).
 
 ## Initial development workflow
 
