@@ -30,4 +30,7 @@ pub enum HostError {
     /// The platform core failed during startup or shutdown.
     #[error("the platform core lifecycle operation failed")]
     Core(#[source] CoreError),
+    /// A blocking core lifecycle worker stopped unexpectedly.
+    #[error("the platform core lifecycle worker stopped unexpectedly")]
+    CoreWorker(#[source] tokio::task::JoinError),
 }
