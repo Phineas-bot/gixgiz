@@ -180,7 +180,11 @@ These choices are governed by the accepted foundation Architecture Decision Reco
 
 ## Contributing
 
-The repository is in its foundation stage. Work should be linked to a focused issue with explicit scope, non-goals, acceptance criteria, tests, and validation evidence. Do not submit broad "build the platform" changes.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup, validation,
+security, and pull-request expectations. The repository is in its foundation
+stage: link work to a focused issue with explicit scope, non-goals, acceptance
+criteria, tests, and validation evidence. Do not submit broad "build the
+platform" changes.
 
 ## Licence
 
