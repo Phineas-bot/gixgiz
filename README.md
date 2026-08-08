@@ -19,7 +19,7 @@ The v0.1 success condition is that a supported non-technical Windows user can mo
 
 ## Status
 
-Flutter Windows desktop shell connected to the supervised Rust platform core through a typed, authenticated, loopback-only Task 04 boundary.
+Flutter Windows desktop shell connected to the supervised Rust platform core through a typed, authenticated, loopback-only boundary, with Rust-owned SQLite persistence contributing verified startup health.
 
 ## Repository map
 
@@ -81,15 +81,16 @@ Task 02 uses Flutter `3.44.8` stable with Dart `3.12.2`; the generated project m
 
 ## Rust platform foundation
 
-The root Cargo workspace contains three crates with a strict dependency direction:
+The root Cargo workspace contains four crates with a strict dependency direction:
 
 ```text
-gixgiz-desktop-host -> gixgiz-core -> gixgiz-contracts
+gixgiz-desktop-host -> gixgiz-core -> gixgiz-persistence -> gixgiz-contracts
 ```
 
 - `gixgiz-contracts` owns serializable, provider-neutral identity, readiness, health, handshake, event, cancellation, error, recovery, and request-correlation contracts.
-- `gixgiz-core` owns platform lifecycle, deterministic readiness policy, safe error mapping, diagnostics initialization, cancellation, and timeout conventions.
-- `gixgiz-desktop-host` builds `gixgiz-core.exe`, reads a per-launch secret from the inherited stdin pipe, and exposes only the authenticated Task 04 HTTP/SSE routes on a dynamic `127.0.0.1` port. It contains no persistence, provider, installer, model, or hardware behavior.
+- `gixgiz-persistence` exclusively owns the SQLite connection, data-root layout, migrations, backups, health checks, and typed repository SQL.
+- `gixgiz-core` owns platform lifecycle, deterministic readiness policy, persistence composition, safe error mapping, diagnostics initialization, cancellation, and timeout conventions.
+- `gixgiz-desktop-host` builds `gixgiz-core.exe`, reads a per-launch secret from the inherited stdin pipe, initializes core services on a blocking worker, and exposes only the authenticated HTTP/SSE routes on a dynamic `127.0.0.1` port. It exposes persistence health but no paths, SQL, or database access.
 
 Run the Rust checks from the repository root:
 
@@ -107,6 +108,14 @@ cargo run -p gixgiz-contracts --example generate_bindings -- --check
 ```
 
 Transport architecture, bootstrap, routes, security controls, and development checks are documented in [`docs/guides/flutter-rust-transport.md`](./docs/guides/flutter-rust-transport.md).
+
+## SQLite persistence
+
+The Windows data root is `%LOCALAPPDATA%\GixGiz`; the database is stored at `data\gixgiz.db` beneath that root. The Rust core is the sole database owner. Flutter, transport clients, providers, Packs, and integrations never open or query SQLite directly.
+
+Database startup enables foreign keys, WAL, and a five-second busy timeout before applying ordered transactional migrations. `PRAGMA user_version` and the immutable `schema_migrations` ledger track compatibility. Newer schemas fail closed without downgrade. Irreversible migrations require a verified online backup under `backups\` before execution.
+
+The foundation stores bounded text metadata for application state, non-secret settings, durable-job state, and categorical audit events. It does not store secrets, transport tokens, prompts, conversations, logs, model binaries, downloads, installer files, or large blobs. Development and migration policy are documented in [`docs/guides/sqlite-persistence.md`](./docs/guides/sqlite-persistence.md).
 
 ## Initial development workflow
 
