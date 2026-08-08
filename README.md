@@ -1,5 +1,7 @@
 # GixGiz
 
+[![Windows CI](https://github.com/Phineas-bot/gixgiz/actions/workflows/ci.yml/badge.svg)](https://github.com/Phineas-bot/gixgiz/actions/workflows/ci.yml)
+
 GixGiz is a desktop app that makes local AI simple. It auto-detects your PC hardware, installs the right runtime, downloads the best AI models, and gives you a GUI to use them. No technical setup is required for end users.
 
 ## One-click local setup, no CLI needed
@@ -78,6 +80,33 @@ The supported implementation environment is Windows 11 x64. Development requires
 - Rustup with the pinned Rust `1.97.1` MSVC toolchain from [`rust-toolchain.toml`](./rust-toolchain.toml).
 
 Task 02 uses Flutter `3.44.8` stable with Dart `3.12.2`; the generated project metadata records framework revision `058e0af2c2b57e369d905a03ac9748b0ebf543c6`. Cargo automatically selects the repository toolchain, including `rustfmt` and `clippy`, when Rustup is available.
+
+## Windows CI
+
+Pull requests, pushes to `main`, and manual runs execute the same Rust, binding,
+persistence, Flutter, and Windows build checks documented below. The workflow
+uses pinned toolchains, read-only repository permissions, and no secrets. A
+successful run retains an unsigned diagnostic Windows bundle for seven days;
+it is not a signed or published release.
+
+Run the complete local equivalents before opening a pull request:
+
+```powershell
+cargo run -p gixgiz-contracts --example generate_bindings -- --check
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+cargo test --workspace --all-features
+
+Set-Location apps/desktop
+flutter pub get
+flutter gen-l10n
+flutter analyze
+flutter test
+flutter build windows
+```
+
+Cache boundaries, action pins, deterministic test policy, and artifact details
+are documented in [`docs/guides/windows-ci.md`](./docs/guides/windows-ci.md).
 
 ## Rust platform foundation
 

@@ -1,0 +1,143 @@
+name: Windows CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: windows-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  windows-validation:
+    name: Windows validation
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      CARGO_TERM_COLOR: always
+      PUB_CACHE: ${{ runner.temp }}\pub-cache
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        shell: pwsh
+        run: |
+          rustup show active-toolchain
+          rustc --version
+          cargo --version
+
+      - name: Cache Cargo dependencies and build output
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~\.cargo\registry
+            ~\.cargo\git
+            target
+          key: gixgiz-${{ runner.os }}-${{ runner.arch }}-cargo-${{ hashFiles('Cargo.lock', 'rust-toolchain.toml') }}
+          restore-keys: |
+            gixgiz-${{ runner.os }}-${{ runner.arch }}-cargo-
+
+      - name: Check generated contracts and Dart bindings
+        run: cargo run -p gixgiz-contracts --example generate_bindings -- --check
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+
+      - name: Lint Rust workspace
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+      - name: Test Rust workspace
+        run: cargo test --workspace --all-features
+
+      - name: Resolve pinned Flutter SDK
+        id: flutter-sdk
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+          flutter-version: 3.44.8
+          dry-run: true
+
+      - name: Cache pinned Flutter SDK
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ${{ steps.flutter-sdk.outputs.CACHE-PATH }}
+          key: gixgiz-${{ runner.os }}-${{ runner.arch }}-flutter-3.44.8-stable
+
+      - name: Install pinned Flutter SDK
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          channel: stable
+          flutter-version: 3.44.8
+          cache-path: ${{ steps.flutter-sdk.outputs.CACHE-PATH }}
+
+      - name: Cache Dart and Flutter packages
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ${{ env.PUB_CACHE }}
+          key: gixgiz-${{ runner.os }}-${{ runner.arch }}-pub-${{ hashFiles('apps/desktop/pubspec.lock', 'apps/desktop/pubspec.yaml') }}
+          restore-keys: |
+            gixgiz-${{ runner.os }}-${{ runner.arch }}-pub-
+
+      - name: Enable Flutter Windows desktop
+        working-directory: apps/desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Restore Flutter dependencies
+        working-directory: apps/desktop
+        run: flutter pub get
+
+      - name: Generate Flutter localizations
+        working-directory: apps/desktop
+        run: flutter gen-l10n
+
+      - name: Analyze Flutter desktop
+        working-directory: apps/desktop
+        run: flutter analyze
+
+      - name: Test Flutter desktop
+        working-directory: apps/desktop
+        run: flutter test
+
+      - name: Build Flutter Windows desktop and Rust sidecar
+        working-directory: apps/desktop
+        run: flutter build windows
+
+      - name: Verify unsigned Windows development bundle
+        shell: pwsh
+        run: |
+          $bundle = 'apps\desktop\build\windows\x64\runner\Release'
+          if (-not (Test-Path -LiteralPath "$bundle\GixGiz.exe" -PathType Leaf)) {
+            throw 'GixGiz.exe is missing from the Windows development bundle.'
+          }
+          if (-not (Test-Path -LiteralPath "$bundle\gixgiz-core.exe" -PathType Leaf)) {
+            throw 'gixgiz-core.exe is missing from the Windows development bundle.'
+          }
+
+      - name: Upload unsigned Windows development bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: gixgiz-windows-unsigned-dev
+          path: |
+            apps/desktop/build/windows/x64/runner/Release/
+            !apps/desktop/build/windows/x64/runner/Release/**/*.db
+            !apps/desktop/build/windows/x64/runner/Release/**/*.db-*
+            !apps/desktop/build/windows/x64/runner/Release/**/*.sqlite*
+            !apps/desktop/build/windows/x64/runner/Release/**/*.log
+            !apps/desktop/build/windows/x64/runner/Release/**/.env*
+            !apps/desktop/build/windows/x64/runner/Release/**/*.key
+            !apps/desktop/build/windows/x64/runner/Release/**/*.pem
+            !apps/desktop/build/windows/x64/runner/Release/**/*.pfx
+            !apps/desktop/build/windows/x64/runner/Release/**/*.p12
+          if-no-files-found: error
+          include-hidden-files: false
+          retention-days: 7
