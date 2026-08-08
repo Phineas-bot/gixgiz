@@ -1,6 +1,6 @@
 [package]
-name = "gixgiz-core"
-description = "Platform lifecycle, readiness policy, and operation conventions for GixGiz."
+name = "gixgiz-persistence"
+description = "Rust-owned SQLite persistence foundation for GixGiz."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,10 +9,9 @@ repository.workspace = true
 
 [dependencies]
 gixgiz-contracts = { path = "../gixgiz-contracts" }
-gixgiz-persistence = { path = "../gixgiz-persistence" }
+rusqlite.workspace = true
 thiserror.workspace = true
-tracing.workspace = true
-tracing-subscriber.workspace = true
+uuid.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

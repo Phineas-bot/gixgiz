@@ -31,27 +31,39 @@ pub async fn run_sidecar() -> Result<(), HostError> {
     let bootstrap = read_bootstrap(stdin).await?;
     let instance_id = InstanceId::new();
     let context = OperationContext::generated();
-    let mut core = PlatformCore::new(Vec::new());
-    let status = core.start(&context).map_err(HostError::Core)?;
+    let (mut core, status) = tokio::task::spawn_blocking(move || {
+        let mut core = PlatformCore::with_default_persistence();
+        let status = core.start(&context)?;
+        Ok::<_, gixgiz_core::CoreError>((core, status))
+    })
+    .await
+    .map_err(HostError::CoreWorker)?
+    .map_err(HostError::Core)?;
 
-    let host = SidecarHost::bind(bootstrap.token.clone(), instance_id, status).await?;
-    let ready = BootstrapReady::new(
-        host.local_addr().port(),
-        instance_id,
-        gixgiz_contracts::PROTOCOL_VERSION,
-        gixgiz_contracts::PROTOCOL_VERSION,
-    );
-    write_bootstrap_ready(&ready).await?;
+    let serve_result = async {
+        let host = SidecarHost::bind(bootstrap.token.clone(), instance_id, status).await?;
+        let ready = BootstrapReady::new(
+            host.local_addr().port(),
+            instance_id,
+            gixgiz_contracts::PROTOCOL_VERSION,
+            gixgiz_contracts::PROTOCOL_VERSION,
+        );
+        write_bootstrap_ready(&ready).await?;
 
-    let shutdown = host.shutdown_handle();
-    tokio::spawn(async move {
-        bootstrap.monitor_supervisor().await;
-        shutdown.request();
-    });
+        let shutdown = host.shutdown_handle();
+        tokio::spawn(async move {
+            bootstrap.monitor_supervisor().await;
+            shutdown.request();
+        });
 
-    let serve_result = host.run().await;
+        host.run().await
+    }
+    .await;
     let shutdown_context = OperationContext::generated().with_timeout(CORE_SHUTDOWN_TIMEOUT);
-    let core_result = core.shutdown(&shutdown_context).map_err(HostError::Core);
+    let core_result = tokio::task::spawn_blocking(move || core.shutdown(&shutdown_context))
+        .await
+        .map_err(HostError::CoreWorker)
+        .and_then(|result| result.map_err(HostError::Core));
 
     serve_result.and(core_result)
 }

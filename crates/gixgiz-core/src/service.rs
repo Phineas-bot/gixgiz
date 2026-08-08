@@ -1,11 +1,11 @@
-use std::fmt;
+use std::{fmt, path::Path};
 
 use gixgiz_contracts::{
     ApplicationInfo, PlatformStatus, ReadinessReport, ReadinessStatus, ServiceHealth,
     ServiceHealthStatus, ServiceRequirement,
 };
 
-use crate::{CoreError, OperationContext};
+use crate::{CoreError, OperationContext, persistence::PersistenceHealthSource};
 
 /// Explicit in-process lifecycle of the Task 03 platform core.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -50,6 +50,24 @@ impl PlatformCore {
             lifecycle: CoreLifecycle::Created,
             health_sources,
         }
+    }
+
+    /// Creates a production core with the default per-user persistence root.
+    ///
+    /// This performs blocking filesystem and SQLite initialization. Async hosts
+    /// must call it from a blocking worker.
+    #[must_use]
+    pub fn with_default_persistence() -> Self {
+        Self::new(vec![Box::new(PersistenceHealthSource::open_default())])
+    }
+
+    /// Creates a core with persistence beneath an explicit controlled root.
+    ///
+    /// Tests should use a temporary directory and must not resolve the user's
+    /// default application-data location.
+    #[must_use]
+    pub fn with_persistence_root(root: impl AsRef<Path>) -> Self {
+        Self::new(vec![Box::new(PersistenceHealthSource::open_override(root))])
     }
 
     /// Returns the current explicit lifecycle state.

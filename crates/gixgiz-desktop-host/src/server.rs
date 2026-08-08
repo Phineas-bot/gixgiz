@@ -587,6 +587,7 @@ impl IntoResponse for ApiFailure {
 #[cfg(test)]
 mod tests {
     use axum::http::Request;
+    use gixgiz_contracts::{ServiceHealthStatus, ServiceRequirement};
     use gixgiz_core::{OperationContext, PlatformCore};
     use http_body_util::BodyExt;
     use serde_json::Value;
@@ -596,12 +597,7 @@ mod tests {
 
     const TOKEN: &str = "abababababababababababababababababababababababababababababababab";
 
-    fn test_state() -> AppState {
-        let context = OperationContext::generated();
-        let mut core = PlatformCore::new(Vec::new());
-        let status = core
-            .start(&context)
-            .expect("core starts with fake-free status");
+    fn state_with_status(status: PlatformStatus) -> AppState {
         let (shutdown_sender, _) = watch::channel(false);
         AppState {
             token: BearerToken::parse(TOKEN.to_owned()).expect("fixed token is valid"),
@@ -614,6 +610,15 @@ mod tests {
                 sender: shutdown_sender,
             },
         }
+    }
+
+    fn test_state() -> AppState {
+        let context = OperationContext::generated();
+        let mut core = PlatformCore::new(Vec::new());
+        let status = core
+            .start(&context)
+            .expect("core starts with fake-free status");
+        state_with_status(status)
     }
 
     fn hello(protocol_min: u32, protocol_max: u32) -> ClientHello {
@@ -716,6 +721,32 @@ mod tests {
         assert_eq!(core.selected_protocol, PROTOCOL_VERSION);
         assert_eq!(core.correlation_id, hello.correlation_id);
         assert_eq!(core.application.name, "GixGiz");
+    }
+
+    #[tokio::test]
+    async fn authenticated_handshake_includes_real_persistence_health() {
+        let temporary = tempfile::tempdir().expect("temporary directory is available");
+        let context = OperationContext::generated();
+        let mut platform = PlatformCore::with_persistence_root(temporary.path().join("data-root"));
+        let status = platform
+            .start(&context)
+            .expect("core reports persistence health");
+        let hello = hello(1, 1);
+        let response = build_router(state_with_status(status))
+            .oneshot(json_request("/internal/v1/handshake", Some(TOKEN), &hello))
+            .await
+            .expect("router responds");
+
+        assert_eq!(response.status(), StatusCode::OK);
+        let core: CoreHello = response_json(response).await;
+        let persistence = core
+            .readiness
+            .services
+            .iter()
+            .find(|service| service.service_id == "persistence")
+            .expect("persistence health crosses the handshake");
+        assert_eq!(persistence.status, ServiceHealthStatus::Healthy);
+        assert_eq!(persistence.requirement, ServiceRequirement::Mandatory);
     }
 
     #[tokio::test]

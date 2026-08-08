@@ -194,3 +194,47 @@ fn operation_context_enforces_cancellation_and_timeout_conventions() {
     assert_eq!(cancelled.check(), Err(CoreError::Cancelled));
     assert_eq!(timed_out.check(), Err(CoreError::TimedOut));
 }
+
+#[test]
+fn persistence_health_makes_a_temporary_core_ready() {
+    let temporary = tempfile::tempdir().expect("temporary directory is available");
+    let mut core = PlatformCore::with_persistence_root(temporary.path().join("data-root"));
+
+    let status = core.start(&context()).expect("core startup reports health");
+
+    assert_eq!(status.readiness.status, ReadinessStatus::Ready);
+    let persistence = status
+        .readiness
+        .services
+        .iter()
+        .find(|service| service.service_id == "persistence")
+        .expect("persistence health is present");
+    assert_eq!(persistence.requirement, ServiceRequirement::Mandatory);
+    assert_eq!(persistence.status, ServiceHealthStatus::Healthy);
+}
+
+#[test]
+fn persistence_open_failure_makes_core_unavailable_without_raw_path() {
+    let temporary = tempfile::tempdir().expect("temporary directory is available");
+    let invalid_root = temporary.path().join("not-a-directory");
+    std::fs::write(&invalid_root, b"fixture").expect("fixture file writes");
+    let mut core = PlatformCore::with_persistence_root(&invalid_root);
+
+    let status = core.start(&context()).expect("core startup reports health");
+
+    assert_eq!(status.readiness.status, ReadinessStatus::Unavailable);
+    let persistence = status
+        .readiness
+        .services
+        .iter()
+        .find(|service| service.service_id == "persistence")
+        .expect("persistence health is present");
+    assert_eq!(persistence.status, ServiceHealthStatus::Unavailable);
+    assert!(
+        !persistence
+            .message
+            .as_deref()
+            .unwrap_or_default()
+            .contains("not-a-directory")
+    );
+}
